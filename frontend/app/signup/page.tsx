@@ -5,12 +5,14 @@ import Header from '../components/header';
 import BackButton from '../components/back';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
     
     const [error, setError] = useState("");
 
     const router = useRouter();
+    const { login } = useAuth();
 
     // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,6 +40,7 @@ export default function LoginPage() {
 
         // Call API here
 
+        login(); // Log the user in
         // Redirect to the homepage after signing up
         router.push("/");
     };

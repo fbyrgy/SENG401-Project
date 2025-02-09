@@ -4,10 +4,12 @@ import Header from '../components/header';
 import BackButton from '../components/back';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
 
     const router = useRouter();
+    const { login } = useAuth();
 
     // Code for signing in
     const handleSubmit = (e: React.FormEvent) => {
@@ -15,6 +17,8 @@ export default function LoginPage() {
 
         // Add API call here
 
+
+        login(); // Log the user in
         // Redirect to the homepage after logging in
         router.push('/');
     };
