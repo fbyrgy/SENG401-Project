@@ -2,11 +2,15 @@
 # Twelve Data API
 # pip install twelvedata
 
+import os
 import pandas as pd
 import json
+from dotenv import load_dotenv
 from twelvedata import TDClient
 
-API_KEY = "6affd8f015f7478ba91f356bf2188ab5" # probably hide this key in github later
+# get api key from .env
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 td = TDClient(apikey = API_KEY)
 
@@ -28,26 +32,22 @@ def get_time_series(ticker: str, interval: str, start_date: str = None, end_date
 def top_gainers_and_losers():
     df = pd.read_csv('backend/sp500_companies.csv')
 
-    # Extract the 'Symbol' column
     symbols = df['Symbol'][:8]
 
-    # Fetch latest price data for all tickers
     latest_prices = {symbol: td.quote(symbol=symbol).as_pandas() for symbol in symbols}
     
-    # Calculate percent change and store gainers/losers
+    # calculate percent change and store gainers/losers
     gainers_losers = [
         {
             "symbol": symbol,
             "percent_change": round((float(data["change"]) / float(data["previous_close"])) * 100, 2)
         }
         for symbol, data in latest_prices.items()
-        if "change" in data and "previous_close" in data  # Ensure required fields exist
+        if "change" in data and "previous_close" in data
     ]
-    
-    # Sort by percent change
+    # sort
     gainers_losers.sort(key=lambda x: x["percent_change"], reverse=True)
     
-    # Extract top gainers and losers
     top_gainers = gainers_losers[:3]
     top_losers = gainers_losers[-3:]
     
