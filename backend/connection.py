@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
+import bcrypt
 
 app = Flask(__name__)
 CORS(app)
@@ -10,7 +11,7 @@ def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
+        password="sqlPassword",
         database="finance_app"
     )
 
@@ -19,10 +20,13 @@ def get_db_connection():
 def add_user():
     data = request.get_json()
     email = data.get("email")
-    password_hash = data.get("password") 
+    password = data.get("password") 
 
-    if not email or not password_hash:
+    if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
+    
+    # Hash the password before storing it in the database
+    password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     conn = get_db_connection()
     cursor = conn.cursor()

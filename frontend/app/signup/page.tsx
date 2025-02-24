@@ -18,7 +18,7 @@ export default function LoginPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Code for signing up
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Check if the email is valid
@@ -38,11 +38,30 @@ export default function LoginPage() {
 
         setError("");
 
-        // Call API here
+        try {
+            const response = await fetch("http://127.0.0.1:5000/add_user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
 
-        login(); // Log the user in
-        // Redirect to the homepage after signing up
-        router.push("/");
+            if (response.ok) {
+                login(); // Log the user in
+                // Redirect to the homepage after signing up
+                router.push("/");
+            } else {
+                setError("Failed to sign up");
+            }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            setError("Failed to sign up");
+
+        }
     };
 
     return (
