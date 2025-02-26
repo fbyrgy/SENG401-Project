@@ -2,6 +2,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
+import os
+from dotenv import load_dotenv  #pip install python-dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
+# Get database password
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +19,7 @@ def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="sqlPassword",
+        password= DB_PASSWORD,
         database="finance_app"
     )
 
@@ -65,6 +73,39 @@ def add_watchlist():
     finally:
         cursor.close()
         conn.close()  
+    
+# Route to get watchlist tickers by user's email
+@app.route('/get_watchlist', methods=['GET'])
+def get_watchlist():
+    email = request.args.get("email")
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Get user ID from email
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user_id = user["id"]
+
+        # Get tickers from watchlist
+        cursor.execute("SELECT stock_ticker FROM watchlist WHERE user_id = %s", (user_id,))
+        watchlist = cursor.fetchall()
+        tickers = [row["stock_ticker"] for row in watchlist]
+
+        return jsonify({"email": email, "watchlist": tickers}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':
