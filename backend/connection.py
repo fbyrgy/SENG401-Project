@@ -77,7 +77,8 @@ def add_watchlist():
 # Route to get watchlist tickers by user's email
 @app.route('/get_watchlist', methods=['GET'])
 def get_watchlist():
-    email = request.args.get("email")
+    data = request.get_json()
+    email = data.get("email")
 
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -87,13 +88,13 @@ def get_watchlist():
 
     try:
         # Get user ID from email
-        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        cursor.execute("SELECT user_id FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        user_id = user["id"]
+        user_id = user["user_id"]
 
         # Get tickers from watchlist
         cursor.execute("SELECT stock_ticker FROM watchlist WHERE user_id = %s", (user_id,))
