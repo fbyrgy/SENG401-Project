@@ -5,22 +5,44 @@ import BackButton from '../components/back';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';   
 
 export default function LoginPage() {
 
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
     const { login } = useAuth();
 
     // Code for signing in
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Add API call here
+        const email = (e.target as HTMLFormElement).email.value;
+        const password = (e.target as HTMLFormElement).password.value;
 
+        try {
+            const response = await fetch("http://127.0.0.1:5002/login", {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
 
-        login(); // Log the user in
-        // Redirect to the homepage after logging in
-        router.push('/');
+                if (response.ok) {  
+                    login(); // Log the user in
+                    // Redirect to the homepage after logging in
+                    router.push('/');
+                } else {
+                    setErrorMessage("Incorrect email or password. Please try again");
+                }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            setErrorMessage("An unexpected error occurred. Please try again");  
+        }
     };
 
     return (
@@ -71,6 +93,10 @@ export default function LoginPage() {
                         >
                             Sign In
                         </button>
+                        {/* Error Message */}
+                        {errorMessage && (
+                            <p className="text-red-500 text-center mt-4">{errorMessage}</p>
+                        )}
 
                         {/* Link to Sign Up */}
                         <p className="text-white text-center mt-6 select-none">
@@ -84,12 +110,5 @@ export default function LoginPage() {
             </div>
         </div>
     );
-
-
 }
-
-
-
-
-
 
