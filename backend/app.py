@@ -1,6 +1,13 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import mysql.connector
+import subprocess
 
-app = Flask(__name__)
-CORS(app)
+# Start all services in parallel
+processes = [
+    subprocess.Popen(["python", "authentication.py"]),
+    subprocess.Popen(["python", "connection.py"]),
+    subprocess.Popen(["python", "news.py"]),
+    subprocess.Popen(["python", "stocks.py"]),
+]
+
+# Optional: Wait for all processes to finish (useful for debugging)
+for process in processes:
+    process.wait()
