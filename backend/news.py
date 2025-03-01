@@ -24,6 +24,7 @@ def get_news():
         'categories': 'business,tech',  # Adjust categories as needed
         'limit': limit,
         'search': keyword,
+        'language': 'en'
     })
     
     conn.request('GET', f'/v1/news/all?{params}')
@@ -53,4 +54,4 @@ def get_news():
     return jsonify({'articles': articles})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5003)
