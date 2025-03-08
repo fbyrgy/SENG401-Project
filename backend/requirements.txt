@@ -4,3 +4,7 @@ mysql-connector-python
 bcrypt
 python-dotenv
 twelvedata
+google-cloud
+google-genai
+npm i --save-dev @types/react-resizable
+npm install react-resizable
