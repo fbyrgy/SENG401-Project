@@ -6,6 +6,7 @@ processes = [
     subprocess.Popen(["python", "connection.py"]),
     subprocess.Popen(["python", "news.py"]),
     subprocess.Popen(["python", "stocks.py"]),
+    subprocess.Popen(["python", "LLM.py"]),
 ]
 
 for process in processes:
