@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (typeof window !== "undefined") {
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("userId", retrievedUserId);
+          localStorage.setItem("email", email);
         }
       } else {
         throw new Error(data.error || "Failed to fetch user ID");
@@ -70,6 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("userId");
+      localStorage.removeItem("email");
     }
   };
 

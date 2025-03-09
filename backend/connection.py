@@ -88,8 +88,7 @@ def add_watchlist():
 # Route to get watchlist tickers by user's email
 @app.route('/get_watchlist', methods=['GET'])
 def get_watchlist():
-    data = request.get_json()
-    email = data.get("email")
+    email = request.args.get("email") 
 
     if not email:
         return jsonify({"error": "Email is required"}), 400
