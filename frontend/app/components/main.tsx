@@ -5,6 +5,7 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 
 const stockData = [
@@ -20,6 +21,8 @@ const topLosers = stockData.filter(stock => stock.change < 0);
 
 const StockDashboard = () => {
   const [newsData, setNewsData] = useState([]);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const { isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false); // control visibility of chatbox
 
   // Fetch news data from API
@@ -32,8 +35,41 @@ const StockDashboard = () => {
         console.error('Error fetching news:', error);
       }
     };
+
+    const fetchWatchlist = async () => {
+      if (!isLoggedIn) {
+        setWatchlist([]);
+        return;
+      }
+    
+      try {
+        const email = localStorage.getItem("email");
+        if (!email) {
+          console.error("No email found in localStorage.");
+          return;
+        }
+    
+        const response = await fetch(`http://localhost:5001/get_watchlist?email=${encodeURIComponent(email)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          setWatchlist(data.watchlist || []);
+        } else {
+          console.error("Error fetching watchlist:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching watchlist:", error);
+      }
+    };
+    
+
     fetchNews();
-  }, []);
+    fetchWatchlist();
+  }, [isLoggedIn]);
 
   const handleChatboxToggle = () => {
     setShowChatbox(!showChatbox);
@@ -41,17 +77,86 @@ const StockDashboard = () => {
 
   return (
     <div className="flex justify-center" style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '40px', padding: '20px', background: '#000' }}>
-      
+
+
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Watchlist Table - only rendered if it is not empty */}
+        {watchlist.length > 0 && (
+          <>
+            <h2 style={{ color: 'white', marginBottom: '10px' }}>Your Watchlist</h2>
+            <TableContainer
+              component={Paper}
+              sx={{
+                maxWidth: '700px',
+                borderRadius: '3%',
+                background: '#404040',
+                marginBottom: '40px',
+              }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Name</TableCell>
+                    <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Symbol</TableCell>
+                    <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Price</TableCell>
+                    <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', textAlign: 'right', paddingRight: '55px', width: '25%' }}>24H Change</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {watchlist.map((stock, index) => (
+                    <TableRow key={index}>
+                      <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>{stock}</TableCell>
+                      <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>{stock}</TableCell>
+                      <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>$--.--</TableCell>
+                      <TableCell
+                        sx={{
+                          textAlign: 'right',
+                          paddingRight: '40px',
+                          borderBottom: '1px solid #181818'
+                        }}
+                      >
+                        {/*TODO: add conditional colours when price data is available*/}
+                        <span
+                          style={{
+                            color: '#ffffff',
+                            backgroundColor: '#888888',
+                            borderRadius: '999px',
+                            padding: '5px 10px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '120px',
+                            fontSize: '15px',
+                          }}
+                        >
+                          --
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+
         {/* Main Stock Table */}
-        <TableContainer component={Paper} sx={{ maxWidth: '700px', borderRadius: '3%', background: '#404040' }}>
+        <h2 style={{ color: 'white', marginBottom: '10px' }}>Popular Symbols</h2>
+        <TableContainer
+          component={Paper}
+          sx={{
+            maxWidth: '700px',
+            borderRadius: '3%',
+            background: '#404040',
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white' }}>Name</TableCell>
-                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white' }}>Symbol</TableCell>
-                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white' }}>Price</TableCell>
-                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', textAlign: 'right', paddingRight: '55px' }}>24H Change</TableCell>
+                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Name</TableCell>
+                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Symbol</TableCell>
+                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', width: '25%' }}>Price</TableCell>
+                <TableCell style={{ background: "#181818", borderBottom: '1px solid #181818', color: 'white', textAlign: 'right', paddingRight: '55px', width: '25%' }}>24H Change</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -60,7 +165,13 @@ const StockDashboard = () => {
                   <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>{stock.name}</TableCell>
                   <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>{stock.symbol}</TableCell>
                   <TableCell style={{ color: 'white', borderBottom: '1px solid #181818' }}>${stock.price.toFixed(2)}</TableCell>
-                  <TableCell sx={{ textAlign: 'right', paddingRight: '40px', borderBottom: '1px solid #181818' }}>
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      paddingRight: '40px',
+                      borderBottom: '1px solid #181818'
+                    }}
+                  >
                     <span
                       style={{
                         color: stock.change >= 0 ? '#31854D' : '#A61111',

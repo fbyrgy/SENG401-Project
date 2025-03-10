@@ -33,7 +33,7 @@ export default function LoginPage() {
             });
 
                 if (response.ok) {  
-                    login(); // Log the user in
+                    login(email); // Log the user in
                     // Redirect to the homepage after logging in
                     router.push('/');
                 } else {
