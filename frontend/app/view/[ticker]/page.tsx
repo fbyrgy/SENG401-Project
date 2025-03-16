@@ -4,10 +4,11 @@ import { useParams } from 'next/navigation';
 import Header from '../../components/header';
 import { Button } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
+import StockChart from '../../components/stock_chart';
 
 export default function StockPage() {
   const params = useParams();
-  const ticker = params.ticker;
+  const ticker = Array.isArray(params.ticker) ? params.ticker[0] : params.ticker;
   const { userId, isLoggedIn } = useAuth();
 
   const handleWatchlistAddition = async () => {
@@ -59,6 +60,7 @@ export default function StockPage() {
           Add to Watchlist
         </Button>
       </div>
+        {ticker && <StockChart ticker={ticker} />}
     </div>
   );
 }
