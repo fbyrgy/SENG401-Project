@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import Header from '../../components/header';
 import { Button } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
+import StockChart from '../../components/stock_chart';
 
 export default function StockPage() {
   const params = useParams();
@@ -58,7 +59,8 @@ export default function StockPage() {
         >
           Add to Watchlist
         </Button>
-      </div>
+        </div>
+        {ticker && <StockChart ticker={ticker} />}
     </div>
   );
 }
