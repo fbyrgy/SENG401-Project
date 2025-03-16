@@ -1,5 +1,6 @@
 import unittest
 import json
+import pandas as pd
 from unittest.mock import patch, MagicMock
 from stocks import app, td 
 
@@ -47,6 +48,45 @@ class TestStocks(unittest.TestCase):
 
         self.assertEqual(response.status_code, 500)
         self.assertIn("API error", response.data.decode())
+    
+    @patch("stocks.pd.read_csv")  
+    def test_validate_ticker_success(self, mock_read_csv):
+        """Test a valid stock ticker lookup."""
+        
+        # Mock CSV DataFrame
+        mock_df = pd.DataFrame({
+            "symbol": ["AAPL", "NVDA"],
+            "name": ["Apple Inc.", "Nvidia Corp."]
+        })
+
+        mock_read_csv.return_value = mock_df 
+
+        response = self.app.get("/validate_ticker?ticker=AAPL")
+        
+        self.assertEqual(response.status_code, 200)  
+        self.assertIn("Apple Inc.", response.data.decode()) 
+    
+    @patch("stocks.pd.read_csv")  
+    def test_validate_ticker_invalid(self, mock_read_csv):
+
+        mock_df = pd.DataFrame({
+            "symbol": ["AAPL", "NVDA"],
+            "name": ["Apple Inc.", "Nvidia Corp."]
+        })
+
+        mock_read_csv.return_value = mock_df 
+
+        response = self.app.get("/validate_ticker?ticker=NONE123")
+        
+        self.assertEqual(response.status_code, 200)  
+        self.assertIn("false", response.data.decode()) 
+        
+    def test_validate_ticker_missing_param(self):
+        response = self.app.get("/validate_ticker?ticker=")
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Missing required parameter: ticker", response.data.decode())
+
 
 if __name__ == "__main__":
     unittest.main()
