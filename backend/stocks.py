@@ -5,6 +5,7 @@
 from flask import Flask, request
 import os
 import pandas as pd
+import json
 from dotenv import load_dotenv
 from twelvedata import TDClient
 
@@ -100,6 +101,37 @@ def top_gainers_losers():
         """
     except Exception as e:
         return f"Error: {str(e)}", 500
+
+# endpoint to determine if a stock ticker is valid
+@app.route('/validate_ticker', methods=['GET'])
+def validate_ticker():
+    ticker = request.args.get('ticker')
+    ticker = ticker.upper()
+
+    if not ticker:
+        return {"error": "Missing required parameter: ticker"}, 400
+
+    try:
+        # Load the CSV file with semicolon delimiter
+        df = pd.read_csv("valid_tickers.csv", delimiter=";")  
+
+        # Ensure column names are correct
+        if "symbol" not in df.columns or "name" not in df.columns:
+            return {"error": "CSV file format is incorrect"}, 500
+
+        # Check if ticker exists
+        row = df[df["symbol"] == ticker]
+
+        if not row.empty:
+            return {
+                "valid": True,
+                "name": row.iloc[0]["name"]
+            }
+
+        return {"valid": False}
+
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 if __name__ == '__main__':
     app.run(port=5004, debug=True)
