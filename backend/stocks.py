@@ -91,14 +91,12 @@ def validate_ticker():
         return {"error": "Missing required parameter: ticker"}, 400
 
     try:
-        # Load the CSV file with semicolon delimiter
+        # The file has ';' as the delimiter
         df = pd.read_csv("valid_tickers.csv", delimiter=";")  
 
-        # Ensure column names are correct
         if "symbol" not in df.columns or "name" not in df.columns:
             return {"error": "CSV file format is incorrect"}, 500
 
-        # Check if ticker exists
         row = df[df["symbol"] == ticker]
 
         if not row.empty:
