@@ -46,6 +46,8 @@ def add_user():
         return jsonify({"message": f"User {email} added successfully!"}), 201
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()  
@@ -79,7 +81,8 @@ def add_watchlist():
 
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
-
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
@@ -114,6 +117,8 @@ def get_watchlist():
         return jsonify({"email": email, "watchlist": tickers}), 200
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
@@ -140,6 +145,8 @@ def get_user_id():
         return jsonify({"user_id": user["user_id"]}), 200
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
