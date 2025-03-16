@@ -9,7 +9,10 @@ import pandas as pd
 import json
 from dotenv import load_dotenv
 from twelvedata import TDClient
+import requests
 
+
+BASE_URL = "https://api.twelvedata.com"
 app = Flask(__name__)
 
 CORS(app)
@@ -23,8 +26,57 @@ csv_path = os.path.join(os.path.dirname(__file__),'sp500_companies.csv')
 
 @app.route('/')
 def home():
-    return "/time_series, /top_gainers_losers"
+    return "/time_series, /top_gainers_losers , /symbol_search"
 
+# Endpoint for symbol search
+@app.route('/symbol_search', methods=['GET'])
+def symbol_search():
+    
+    symbol = request.args.get('symbol')
+    figi = request.args.get('figi')  # Optional parameter
+    outputsize = request.args.get('outputsize', 30)  # Optional (default is 30)
+    show_plan = request.args.get('show_plan', 'false').lower() == 'true'  # Optional (default is false)
+
+    if not symbol:
+        return jsonify({"error": "Missing required parameter: symbol."}), 400
+    try:
+        # Build the request URL with parameters
+        params = {
+            "symbol": symbol,
+            "figi": figi,
+            "outputsize": outputsize,
+            "show_plan": show_plan,
+            "apikey": API_KEY  # Pass the API key as a parameter
+        }
+        # API request to Twelve Data API
+        response = requests.get(BASE_URL+'/symbol_search', params=params)
+        data = response.json()
+
+        # Checks 'data'
+        if "data" not in data or not data["data"]:
+            return jsonify({"error": "No matching symbols found."}), 404
+
+        # Extract information from data
+        symbols_data = [
+            {
+                "symbol": result.get("symbol", "N/A"),
+                "instrument_name": result.get("instrument_name", "N/A"),
+                "exchange": result.get("exchange", "N/A"),
+                "mic_code": result.get("mic_code", "N/A"),
+                "exchange_timezone": result.get("exchange_timezone", "N/A"),
+                "instrument_type": result.get("instrument_type", "N/A"),
+                "country": result.get("country", "N/A"),
+            }
+            for result in data["data"]
+        ]
+
+        return jsonify({"results": symbols_data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# endpoint for time series
+@app.route('/time_series', methods=['GET'])
 @app.route('/time_series', methods=['GET'])
 def get_time_series():
     ticker = request.args.get('ticker')
