@@ -8,6 +8,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 import StockTable from './stock_table';
+import TopGainers from './top_gainers';
+import TopMovers from './top_movers';
 
 const oldstockData = [
   { name: 'Apple Inc.', symbol: 'AAPL', price: 175.42, change: +1.25 },
@@ -219,90 +221,9 @@ const StockDashboard = () => {
         </Button>
 
         {/* Top Gainers Table */}
-        <TableContainer component={Paper} sx={{ borderRadius: '3%', background: '#404040' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: '#fff', background: '#181818', borderBottom: '1px solid #181818' }}>Name</TableCell>
-                <TableCell sx={{ color: '#fff', background: '#181818', borderBottom: '1px solid #181818' }}>Change</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {topGainers.map((stock, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ color: '#ddd', borderBottom: '1px solid #181818' }}>{stock.name}</TableCell>
-                  <TableCell sx={{ borderBottom: '1px solid #181818', textAlign: 'right', paddingRight: '40px' }}>
-                    <span
-                      style={{
-                        color: stock.change >= 0 ? '#31854D' : '#A61111',
-                        backgroundColor: stock.change >= 0 ? '#ACD4B4' : '#CC7474',
-                        height: '34px',
-                        borderRadius: '999px',
-                        padding: '5px 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        width: '110px',
-                        fontSize: '15px',
-                      }}
-                    >
-                      {stock.change >= 0 ? (
-                        <ArrowUpwardIcon sx={{ fontSize: 20, marginRight: '5px' }} />
-                      ) : (
-                        <ArrowDownwardIcon sx={{ fontSize: 20, marginRight: '5px' }} />
-                      )}
-                      {Math.abs(stock.change)}%
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
+        <TopMovers direction="gainers" title="Top Gainers" />
         {/* Top Losers Table */}
-        <TableContainer component={Paper} sx={{ borderRadius: '3%', background: '#404040' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: '#fff', background: '#181818', borderBottom: '1px solid #181818' }}>Top Losers</TableCell>
-                <TableCell sx={{ color: '#fff', background: '#181818', borderBottom: '1px solid #181818' }}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {topLosers.map((stock, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ color: '#ddd', borderBottom: '1px solid #181818' }}>{stock.name}</TableCell>
-                  <TableCell sx={{ borderBottom: '1px solid #181818', textAlign: 'right', paddingRight: '40px' }}>
-                    <span
-                      style={{
-                        color: stock.change >= 0 ? '#31854D' : '#A61111',
-                        backgroundColor: stock.change >= 0 ? '#ACD4B4' : '#CC7474',
-                        height: '34px',
-                        borderRadius: '999px',
-                        padding: '5px 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        width: '110px',
-                        fontSize: '15px',
-                      }}
-                    >
-                      {stock.change >= 0 ? (
-                        <ArrowUpwardIcon sx={{ fontSize: 20, marginRight: '5px' }} />
-                      ) : (
-                        <ArrowDownwardIcon sx={{ fontSize: 20, marginRight: '5px' }} />
-                      )}
-                      {Math.abs(stock.change)}%
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <TopMovers direction="losers" title="Top Losers" />
       </div>
 
       {/* Conditionally Render the Chatbox */}
