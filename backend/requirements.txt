@@ -4,3 +4,5 @@ mysql-connector-python
 bcrypt
 python-dotenv
 twelvedata
+google-cloud
+google-genai

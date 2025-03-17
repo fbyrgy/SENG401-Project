@@ -38,6 +38,8 @@ def login():
             return jsonify({"error": "User not found"}), 404
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()

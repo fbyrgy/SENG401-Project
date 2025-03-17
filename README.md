@@ -8,6 +8,8 @@
 2. Install dependencies (only needed the first time):
    ```bash
    npm install
+   npm install recharts
+   npm install react-resizable
    ```
 3. Start the application:
    ```bash

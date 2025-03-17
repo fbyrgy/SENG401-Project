@@ -46,6 +46,8 @@ def add_user():
         return jsonify({"message": f"User {email} added successfully!"}), 201
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()  
@@ -59,26 +61,37 @@ def add_watchlist():
 
     if not user_id or not stock_ticker:
         return jsonify({"error": "User ID and stock ticker are required"}), 400
+    stock_ticker = stock_ticker.upper()
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
+        cursor.execute("SELECT 1 FROM watchlist WHERE user_id = %s AND stock_ticker = %s", (user_id, stock_ticker))
+        existing_entry = cursor.fetchone()
+        
+        if existing_entry:
+            return jsonify({"message": f"Stock {stock_ticker} is already in your watchlist."}), 200
+
         sql = "INSERT INTO watchlist (user_id, stock_ticker) VALUES (%s, %s)"
         cursor.execute(sql, (user_id, stock_ticker))
         conn.commit()
+
         return jsonify({"message": f"Stock {stock_ticker} added to watchlist!"}), 201
+
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
-        conn.close()  
+        conn.close()
+
     
 # Route to get watchlist tickers by user's email
 @app.route('/get_watchlist', methods=['GET'])
 def get_watchlist():
-    data = request.get_json()
-    email = data.get("email")
+    email = request.args.get("email") 
 
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -104,9 +117,40 @@ def get_watchlist():
         return jsonify({"email": email, "watchlist": tickers}), 200
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
+        
+# Route to get user_id by email
+@app.route('/get_user_id', methods=['POST'])
+def get_user_id():
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT user_id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({"user_id": user["user_id"]}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 if __name__ == '__main__':
