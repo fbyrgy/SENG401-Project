@@ -216,7 +216,8 @@ export default function StockPage() {
       </div>
 
       {/* Chatbox */}
-      {showChatbox && <Chatbox />}
+      {showChatbox && <Chatbox ticker={ticker} />}
+
     </div>
   );
 }
