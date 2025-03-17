@@ -162,6 +162,37 @@ def validate_ticker():
     except Exception as e:
         return {"error": str(e)}, 500
 
+# endpoint to get the current price of a stock
+@app.route('/quote', methods=['GET'])
+def current_price():
+    ticker = request.args.get('ticker')
+
+    if not ticker:
+        return jsonify({"error": "Missing required parameter: ticker"}), 400
+
+    try:
+        quote_data = td.quote(symbol=ticker)
+        
+        if quote_data is None:
+            return jsonify({"error": "No data available for the given ticker."}), 404
+
+        quote_df = quote_data.as_pandas()
+
+        if quote_df.empty:
+            return jsonify({"error": "No data available."}), 500
+
+        result = {
+            "symbol": ticker,
+            "name": quote_df.iloc[0].get("name", "N/A"),
+            "current_price": float(quote_df.iloc[0].get("close", "N/A")),
+            "percent_change": float(quote_df.iloc[0].get("percent_change", "N/A"))
+        }
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(port=5004, debug=True)
 
