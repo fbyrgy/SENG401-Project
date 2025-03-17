@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css'; 
 
-const Chatbox = () => {
+const Chatbox = ({ ticker }: { ticker: string }) => {
   const [userMessage, setUserMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -11,16 +11,16 @@ const Chatbox = () => {
   const handleSendMessage = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (!userMessage.trim()) return;
+
     setChatHistory((prevHistory) => [...prevHistory, `You: ${userMessage}`]);
     setIsLoading(true);
 
     try {
       const response = await fetch('http://localhost:5005/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage, ticker }),
       });
 
       if (!response.ok) {
@@ -30,11 +30,11 @@ const Chatbox = () => {
       const data = await response.json();
       console.log("Received response from AI:", data);
 
-      if (data.response) {
-        setChatHistory((prevHistory) => [...prevHistory, `AI: ${data.response}`]);
-      } else {
-        throw new Error(data.error || 'Unknown error');
-      }
+      setChatHistory((prevHistory) => [
+        ...prevHistory, 
+        data.response ? `AI: ${data.response}` : 'AI: No response available.'
+      ]);
+
     } catch (error) {
       console.error('Error in fetch:', error);
       setChatHistory((prevHistory) => [...prevHistory, 'AI: Sorry, something went wrong.']);
@@ -53,16 +53,14 @@ const Chatbox = () => {
       <ResizableBox
         width={300}
         height={isMinimized ? 50 : 400}
-        minConstraints={[200, 50]}  // Minimum size
-        maxConstraints={[600, 600]}  // Maximum size
+        minConstraints={[200, 50]}
+        maxConstraints={[600, 600]}
         axis="both"
-        resizeHandles={['nw']} // Resize handle at the top-left corner
+        resizeHandles={['nw']}
       >
         <div className="bg-[#404040] text-white rounded-lg shadow-lg flex flex-col resize overflow-hidden border border-[#181818] relative">
-          {/* Resize Handle - Positioned in the top-left corner */}
           <div className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize bg-gray-600 rounded-full"></div>
 
-          {/* Header */}
           <div className="flex justify-between items-center p-2">
             <span className="text-lg font-bold">Chat</span>
             <button
