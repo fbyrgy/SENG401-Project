@@ -4,10 +4,12 @@ import http.client
 import urllib.parse
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()  
 
 app = Flask(__name__)
+CORS(app) 
 
 @app.route('/news', methods=['GET'])
 def get_news():

@@ -16,11 +16,18 @@ const stockData = [
   { name: 'Google LLC', symbol: 'GOOGL', price: 134.89, change: +2.23 }
 ];
 
+interface NewsArticle {
+  headline: string;
+  source: string;
+  link: string;
+  picture?: string; // Optional property
+}
+
 const topGainers = stockData.filter(stock => stock.change > 0);
 const topLosers = stockData.filter(stock => stock.change < 0);
 
 const StockDashboard = () => {
-  const [newsData, setNewsData] = useState([]);
+  const [newsData, setNewsData] = useState<NewsArticle[]>([]);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const { isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false); // control visibility of chatbox
@@ -29,8 +36,9 @@ const StockDashboard = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get('API'); // Replace with a real API
-        setNewsData(response.data.articles); // API returns
+        const response = await axios.get<{ articles: NewsArticle[] }>('http://127.0.0.1:5003/news?keyword=stocks&limit=5');
+        console.log("News API Response:", response.data.articles); // Log data
+        setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
       }
@@ -223,27 +231,19 @@ const StockDashboard = () => {
               {newsData.length > 0 ? (
                 newsData.map((news, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818' }}></TableCell>
+                    <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818' }}>
+                      <a href={news.link} target="_blank" rel="noopener noreferrer" style={{ color: '#61dafb', textDecoration: 'none' }}>
+                        {news.headline}
+                      </a> - {news.source}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
-                <>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 1
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 2
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 3
-                    </TableCell>
-                  </TableRow>
-                </>
+                <TableRow>
+                  <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
+                    No news available
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
