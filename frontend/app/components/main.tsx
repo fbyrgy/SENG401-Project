@@ -2,27 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 import StockTable from './stock_table';
-import TopGainers from './top_gainers';
 import TopMovers from './top_movers';
 
-const oldstockData = [
-  { name: 'Apple Inc.', symbol: 'AAPL', price: 175.42, change: +1.25 },
-  { name: 'Tesla Inc.', symbol: 'TSLA', price: 244.23, change: -2.11 },
-  { name: 'Amazon.com Inc.', symbol: 'AMZN', price: 123.45, change: +0.98 },
-  { name: 'Microsoft Corp.', symbol: 'MSFT', price: 315.67, change: -0.65 },
-  { name: 'Google LLC', symbol: 'GOOGL', price: 134.89, change: +2.23 }
-];
-
 const STOCK_TICKERS = ['AAPL', 'MSFT', 'GOOGL'];
-
-const topGainers = oldstockData.filter(stock => stock.change > 0);
-const topLosers = oldstockData.filter(stock => stock.change < 0);
 
 const StockDashboard = () => {
   const [newsData, setNewsData] = useState([]);

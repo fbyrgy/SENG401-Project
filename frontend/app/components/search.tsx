@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -11,6 +12,7 @@ interface Symbol {
 }
 
 export default function Search() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredSymbols, setFilteredSymbols] = useState<Symbol[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -19,7 +21,7 @@ export default function Search() {
 
   // Handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    const value = event.target.value.trim();
     setSearchQuery(value);
     setPage(1); // Reset to the first page on new search
     setFilteredSymbols([]); // Clear previous search results
@@ -78,6 +80,18 @@ export default function Search() {
     }
   }, [page, searchQuery, fetchSymbols]);
 
+  // Handle clicking a search result
+  const handleResultClick = (ticker: string) => {
+    router.push(`/view/${ticker}`);
+  };
+
+  // Handle pressing "Enter" in search bar
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && searchQuery.length > 0) {
+      router.push(`/view/${searchQuery.toUpperCase()}`);
+    }
+  };
+
   return (
     <div className="flex w-full h-[120px] shadow-md items-center justify-between px-4 bg-background">
       {/* Search Bar */}
@@ -85,6 +99,7 @@ export default function Search() {
         <TextField
           value={searchQuery}
           onChange={handleSearchChange}
+          onKeyDown={handleKeyDown}  // Detect Enter key
           variant="outlined"
           placeholder="Search for Stocks, ETFs, and Crypto"
           InputProps={{
@@ -116,7 +131,11 @@ export default function Search() {
             onScroll={handleScroll}
           >
             {filteredSymbols.map((symbol, index) => (
-              <div key={index} className="p-2 border-b border-gray-700 hover:bg-gray-700 cursor-pointer">
+              <div 
+                key={index} 
+                className="p-2 border-b border-gray-700 hover:bg-gray-700 cursor-pointer"
+                onClick={() => handleResultClick(symbol.symbol)}
+              >
                 {symbol.symbol} - {symbol.instrument_name}
               </div>
             ))}

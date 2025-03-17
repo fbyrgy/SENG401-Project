@@ -5,7 +5,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const StockTable = ({ stockData, title }) => {
-  // Handle undefined/null stockData
+
   if (!stockData || stockData.length === 0) {
     return <h2 style={{ color: 'white', marginBottom: '10px' }}>Loading {title}...</h2>;
   }
