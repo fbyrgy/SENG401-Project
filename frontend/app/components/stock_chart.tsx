@@ -36,7 +36,7 @@ export default function StockChart({ ticker }: StockChartProps) {
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - days);
 
-        const startStr = startDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        const startStr = startDate.toISOString().split('T')[0];
         const endStr = endDate.toISOString().split('T')[0];
 
         const response = await fetch(
