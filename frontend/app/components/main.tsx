@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Button } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
@@ -37,10 +37,10 @@ const StockDashboard = () => {
         if (response.data && Array.isArray(response.data.articles)) {
           setNewsData(response.data.articles); 
         } else {
-          console.error("❌ API response does not contain expected articles:", response.data);
+          console.error("API response does not contain expected articles:", response.data);
         }
       } catch (error) {
-        console.error('❌ Error fetching news:', error);
+        console.error('Error fetching news:', error);
       }
     };
 
@@ -149,6 +149,7 @@ const StockDashboard = () => {
         {/* Popular Symbols table */}
         <StockTable stockData={stockData} title="Popular Symbols" />
         {/* Recent News */}
+        <h2 className="text-center mb-4" style={{ color: 'white'}}>Top Stories</h2>
         <StockNews newsData={newsData} />
       </div>
 
