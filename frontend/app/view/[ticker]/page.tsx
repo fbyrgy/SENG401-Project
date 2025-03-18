@@ -1,5 +1,4 @@
-
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -8,42 +7,31 @@ import Header from '../../components/header';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import StockChart from '../../components/stock_chart';
-import Search from '../../components/search';
 import Chatbox from '../../components/chatbox';
-
-const topGainers = [
-  { name: 'Apple Inc.', change: +1.25 },
-  { name: 'Amazon.com Inc.', change: +0.98 },
-  { name: 'Google LLC', change: +2.23 }
-];
-
-const topLosers = [
-  { name: 'Tesla Inc.', change: -2.11 },
-  { name: 'Microsoft Corp.', change: -0.65 }
-];
 
 export default function StockPage() {
   const params = useParams();
-  const ticker = Array.isArray(params.ticker) ? params.ticker[0] : params.ticker;
+  const ticker: string = Array.isArray(params.ticker) ? params.ticker[0] : params.ticker ?? ""; // ✅ Ensure it's always a string
+
   const { userId, isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false);
   const [newsData, setNewsData] = useState<any[]>([]);
 
+  // ✅ Fetch news for the specific stock ticker
   useEffect(() => {
+    if (!ticker) return;
+
     const fetchNews = async () => {
       try {
-        const response = await axios.get('API'); // Replace with actual API
+        const response = await axios.get(`http://127.0.0.1:5003/news?keyword=${encodeURIComponent(ticker)}&limit=5`);
         setNewsData(response.data?.articles || []);
       } catch (error) {
         console.error('Error fetching news:', error);
       }
     };
-    fetchNews();
-  }, []);
 
-  const handleChatboxToggle = () => {
-    setShowChatbox(!showChatbox);
-  };
+    fetchNews();
+  }, [ticker]); // Runs when ticker changes
 
   const handleWatchlistAddition = async () => {
     if (!isLoggedIn) {
@@ -68,156 +56,86 @@ export default function StockPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#121212] border border-[#181818] text-white flex flex-col items-center p-6">
+    <div className="min-h-screen w-full bg-[#121212] text-white flex flex-col items-center p-6">
       {/* Header */}
-      <div className="w-full h-[59px] bg-[#181818] shadow-md flex items-center justify-between px-4 fixed top-0 z-50">
-        <Header />
+      <Header />
+
+      {/* Stock Chart Section */}
+      <div className="w-full bg-[#404040] rounded-[3%] p-4 mt-6">
+        <h2 className="text-white text-lg mb-4 text-center">{ticker} Stock Chart</h2>
+        {ticker && <StockChart ticker={ticker} />}
       </div>
 
-       {/* Search Bar */}
-       <div className="mt-[40px] flex w-full h-[120px] shadow-md items-center justify-between">
-         <Search />
-       </div>
-
-      {/* Main Content */}
-      <div className="flex flex-row w-full max-w-[1200px] gap-10 mt-6">
-        {/* Left Section (Stock Chart & News) */}
-        <div className="flex flex-col items-center w-[820px]">
-          
-          {/* Stock Chart */}
-          <div className="w-full bg-[#404040] rounded-[3%] p-4">
-            <h2 className="text-white text-lg mb-4 text-center"></h2>
-            {ticker && <StockChart ticker={ticker} />}
-          </div>
-
-          {/* News Section */}
-          <TableContainer
-            component={Paper}
-            sx={{
-              width: '100%',
-              borderRadius: '10%',
-              background: '#000',
-              maxHeight: '400px',
-              overflowY: 'auto',
-              marginTop: '40px',
-              padding: '10px',
-              borderBottom: '1px solid #181818',
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: '#fff', background: '#181818', fontSize: '18px', fontWeight: 'bold' }}>
-                    Top Financial News
+      {/* ✅ News Section */}
+      <h2 className="text-white text-xl font-bold mt-6">Latest News for {ticker}</h2>
+      <TableContainer
+        component={Paper}
+        sx={{
+          width: '100%',
+          borderRadius: '10%',
+          background: '#000',
+          maxHeight: '400px',
+          overflowY: 'auto',
+          marginTop: '20px',
+          padding: '10px',
+          borderBottom: '1px solid #181818',
+        }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ color: '#fff', background: '#181818', fontSize: '18px', fontWeight: 'bold' }}>
+                Headline
+              </TableCell>
+              <TableCell sx={{ color: '#fff', background: '#181818', fontSize: '18px', fontWeight: 'bold' }}>
+                Source
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {newsData.length > 0 ? (
+              newsData.map((news, index) => (
+                <TableRow key={index}>
+                  <TableCell sx={{ color: '#61dafb', borderBottom: '1px solid #181818', fontSize: '14px' }}>
+                    <a href={news.link} target="_blank" rel="noopener noreferrer">
+                      {news.headline}
+                    </a>
+                  </TableCell>
+                  <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818', fontSize: '14px' }}>
+                    {news.source}
                   </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {newsData.length > 0 ? (
-                  newsData.map((news, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818', fontSize: '14px' }}>
-                        {news.title}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 1
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 2
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 3
-                      </TableCell>
-                    </TableRow>
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={2} sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
+                  No news available
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-        {/* Right Section (Buttons, Gainers, Losers) */}
-        <div className="flex flex-col w-[300px] gap-6">
-          {/* Add to Watchlist Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              width: '100%',
-              backgroundColor: '#2596BE',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              borderRadius: '25px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-              transition: '0.3s',
-              '&:hover': {
-                backgroundColor: '#1B7A99',
-                transform: 'scale(1.05)',
-              },
-            }}
-            onClick={handleWatchlistAddition}
-          >
-            Add to Watchlist
-          </Button>
+      {/* Watchlist Button */}
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          width: '100%',
+          backgroundColor: '#2596BE',
+          fontWeight: 'bold',
+          textTransform: 'none',
+          borderRadius: '25px',
+          marginTop: '20px',
+        }}
+        onClick={handleWatchlistAddition}
+      >
+        Add {ticker} to Watchlist
+      </Button>
 
-          {/* AI Assistant Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              width: '100%',
-              backgroundColor: '#2596BE',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              borderRadius: '25px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-              transition: '0.3s',
-              '&:hover': {
-                backgroundColor: '#1B7A99',
-                transform: 'scale(1.05)',
-              },
-            }}
-            onClick={handleChatboxToggle}
-          >
-            Try our AI Advisor
-          </Button>
-
-          {/* Top Gainers & Losers */}
-          {[{ title: 'Top Gainers', data: topGainers }, { title: 'Top Losers', data: topLosers }].map(({ title, data }) => (
-            <TableContainer key={title} component={Paper} sx={{ borderRadius: '3%', background: '#404040' }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', background: '#181818', borderBottom: '1px solid #181818' }}>{title}</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.map((stock, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ color: '#ddd', borderBottom: '1px solid #181818' }}>
-                        {stock.name} ({stock.change > 0 ? '+' : ''}{stock.change}%)
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ))}
-        </div>
-      </div>
-
-      {/* Chatbox */}
-      {showChatbox && <Chatbox ticker={ticker} />}
-
+      {/* ✅ Chatbox - Ensures `ticker` is defined before rendering */}
+      {showChatbox && ticker && <Chatbox ticker={ticker} />}
     </div>
   );
 }

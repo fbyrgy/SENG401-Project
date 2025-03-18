@@ -7,11 +7,18 @@ import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 import StockTable from './stock_table';
 import TopMovers from './top_movers';
+import StockNews from "./news";
+
+interface NewsArticle {
+  headline: string;
+  source: string;
+  link: string;
+}
 
 const STOCK_TICKERS = ['AAPL', 'MSFT', 'GOOGL'];
 
 const StockDashboard = () => {
-  const [newsData, setNewsData] = useState([]);
+  const [newsData, setNewsData] = useState<NewsArticle[]>([]);
   const [watchlistTickers, setWatchlistTickers] = useState<string[]>([]);
   const { isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false); // control visibility of chatbox
@@ -24,10 +31,16 @@ const StockDashboard = () => {
     // Fetch news data from API
     const fetchNews = async () => {
       try {
-        const response = await axios.get('API'); // Replace with a real API
-        setNewsData(response.data.articles); // API returns
+        const response = await axios.get<{ articles: NewsArticle[] }>(
+          `http://127.0.0.1:5003/news?keyword=stocks&limit=5`
+        );
+        if (response.data && Array.isArray(response.data.articles)) {
+          setNewsData(response.data.articles); 
+        } else {
+          console.error("❌ API response does not contain expected articles:", response.data);
+        }
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.error('❌ Error fetching news:', error);
       }
     };
 
@@ -135,58 +148,8 @@ const StockDashboard = () => {
         )}
         {/* Popular Symbols table */}
         <StockTable stockData={stockData} title="Popular Symbols" />
-
-        {/* Stock News Table - Positioned Below Main Table */}
-        <TableContainer
-          component={Paper}
-          sx={{
-            width: '700px',
-            borderRadius: '10%',
-            background: '#121212',
-            maxHeight: '400px',
-            overflowY: 'auto',
-            marginTop: '40px',
-            padding: '10px',
-            borderBottom: 'none',
-            boxShadow: 'none',
-            outline: 'none',
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: '#fff', background: '#181818' }}>Top Financial News</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {newsData.length > 0 ? (
-                newsData.map((news, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818' }}></TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 1
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 2
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                      Story 3
-                    </TableCell>
-                  </TableRow>
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {/* Recent News */}
+        <StockNews newsData={newsData} />
       </div>
 
       {/* Right Section */}

@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "react-resizable": "^3.0.5"
+    "react-resizable": "^3.0.5",
+    "recharts": "^2.15.1"
   },
   "devDependencies": {
     "@types/react-resizable": "^3.0.8"
