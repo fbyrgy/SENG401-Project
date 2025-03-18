@@ -213,7 +213,7 @@ const StockDashboard = () => {
       </div>
 
       {/* Conditionally Render the Chatbox */}
-      {showChatbox && <Chatbox />}
+      {showChatbox && <Chatbox ticker={''} />}
     </div>
   );
 };
