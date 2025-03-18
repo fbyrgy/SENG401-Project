@@ -34,10 +34,14 @@ const StockDashboard = () => {
 
   // Fetch news data from API
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchNews = async (symbol: string) => {
       try {
-        const response = await axios.get<{ articles: NewsArticle[] }>('http://127.0.0.1:5003/news?keyword=stocks&limit=5');
-        console.log("News API Response:", response.data.articles); // Log data
+        const response = await axios.get<{ articles: NewsArticle[] }>(
+          `http://127.0.0.1:5003/news?keyword=${encodeURIComponent(symbol)}&limit=5`
+        );
+    
+        console.log("News API Response:", response.data.articles);
+    
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -75,7 +79,7 @@ const StockDashboard = () => {
     };
     
 
-    fetchNews();
+    fetchNews("stocks");
     fetchWatchlist();
   }, [isLoggedIn]);
 
@@ -208,39 +212,87 @@ const StockDashboard = () => {
         </TableContainer>
 
         {/* Stock News Table - Positioned Below Main Table */}
+        {/* News Section Title */}
+        <h2 style={{ color: 'white', marginTop:'40px', marginBottom: '10px' }}>Top Financial News</h2>
+
+        {/* News Table (Matches Popular Symbols Layout) */}
         <TableContainer
           component={Paper}
           sx={{
-            width: '700px',
-            borderRadius: '10%',
-            background: '#000',
-            maxHeight: '400px',
-            overflowY: 'auto',
-            marginTop: '40px',
-            padding: '10px',
-            borderBottom: '1px solid #181818',
+            maxWidth: '700px',
+            borderRadius: '3%',
+            background: '#404040',
           }}
         >
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: '#fff', background: '#181818' }}>Top Financial News</TableCell>
+                <TableCell
+                  style={{
+                    background: "#181818",
+                    borderBottom: '1px solid #181818',
+                    color: 'white',
+                    width: '75%', // Wider to match stock "Name" column
+                  }}
+                >
+                  Headline
+                </TableCell>
+                <TableCell
+                  style={{
+                    background: "#181818",
+                    borderBottom: '1px solid #181818',
+                    color: 'white',
+                    width: '25%', // Narrower for news source
+                  }}
+                >
+                  Source
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {newsData.length > 0 ? (
                 newsData.map((news, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818' }}>
-                      <a href={news.link} target="_blank" rel="noopener noreferrer" style={{ color: '#61dafb', textDecoration: 'none' }}>
+                    <TableCell
+                      style={{
+                        color: 'white',
+                        borderBottom: '1px solid #181818',
+                      }}
+                    >
+                      <a
+                        href={news.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: '#61dafb',
+                          textDecoration: 'none',
+                          fontWeight: 'bold',
+                        }}
+                      >
                         {news.headline}
-                      </a> - {news.source}
+                      </a>
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        color: 'white',
+                        borderBottom: '1px solid #181818',
+                      }}
+                    >
+                      {news.source}
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
+                  <TableCell
+                    colSpan={2}
+                    style={{
+                      color: '#fff',
+                      textAlign: 'center',
+                      padding: '20px',
+                      background: '#404040',
+                    }}
+                  >
                     No news available
                   </TableCell>
                 </TableRow>
