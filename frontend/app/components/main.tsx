@@ -31,23 +31,27 @@ const StockDashboard = () => {
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const { isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false); // control visibility of chatbox
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch news data from API
+  const fetchNews = async (symbol: string) => {
+        try {
+          const response = await axios.get<{ articles: NewsArticle[] }>(
+            `http://127.0.0.1:5003/news?keyword=${encodeURIComponent(symbol)}&limit=5`
+          );
+      
+          setNewsData(response.data.articles);
+        } catch (error) {
+          console.error('Error fetching news:', error);
+        }
+      };
+
+      const handleSearch = () => {
+        if (searchQuery.trim() !== '') {
+          fetchNews(searchQuery);
+        }
+      };
+  
   useEffect(() => {
-    const fetchNews = async (symbol: string) => {
-      try {
-        const response = await axios.get<{ articles: NewsArticle[] }>(
-          `http://127.0.0.1:5003/news?keyword=${encodeURIComponent(symbol)}&limit=5`
-        );
-    
-        console.log("News API Response:", response.data.articles);
-    
-        setNewsData(response.data.articles);
-      } catch (error) {
-        console.error('Error fetching news:', error);
-      }
-    };
-
     const fetchWatchlist = async () => {
       if (!isLoggedIn) {
         setWatchlist([]);
@@ -86,6 +90,7 @@ const StockDashboard = () => {
   const handleChatboxToggle = () => {
     setShowChatbox(!showChatbox);
   };
+  
 
   return (
     <div className="flex justify-center" style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '40px', padding: '20px', background: '#000' }}>
@@ -214,6 +219,26 @@ const StockDashboard = () => {
         {/* Stock News Table - Positioned Below Main Table */}
         {/* News Section Title */}
         <h2 style={{ color: 'white', marginTop:'40px', marginBottom: '10px' }}>Top Financial News</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search Stocks (e.g., AAPL)"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
+          style={{
+            padding: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            marginRight: '10px',
+            width: '250px',
+            backgroundColor: '#181818',
+            color: 'white',
+          }}
+        />
+        <Button variant="contained" color="primary" onClick={handleSearch}>
+          Search
+        </Button>
+      </div>
 
         {/* News Table (Matches Popular Symbols Layout) */}
         <TableContainer
