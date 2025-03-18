@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 import StockTable from './stock_table';
 import TopMovers from './top_movers';
+import StockNews from "./news";
 
 interface NewsArticle {
   headline: string;
@@ -147,52 +148,8 @@ const StockDashboard = () => {
         )}
         {/* Popular Symbols table */}
         <StockTable stockData={stockData} title="Popular Symbols" />
-
-        {/* Stock News Table - Positioned Below Main Table */}
-        <TableContainer
-          component={Paper}
-          sx={{
-            width: '700px',
-            borderRadius: '12px',  
-            background: '#181818',  
-            maxHeight: '400px',
-            overflowY: 'auto',
-            marginTop: '40px',
-            padding: '10px',
-            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', 
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: '#fff', background: '#181818' }}>Headline</TableCell>
-                <TableCell sx={{ color: '#fff', background: '#181818' }}>Source</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {newsData.length > 0 ? (
-                newsData.map((news, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: '#61dafb', borderBottom: '1px solid #181818' }}>
-                      <a href={news.link} target="_blank" rel="noopener noreferrer">
-                        {news.headline}
-                      </a>
-                    </TableCell>
-                    <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818' }}>
-                      {news.source}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={2} sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                    No financial news available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {/* Recent News */}
+        <StockNews newsData={newsData} />
       </div>
 
       {/* Right Section */}
