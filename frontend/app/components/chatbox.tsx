@@ -6,11 +6,10 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
   const [userMessage, setUserMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false); 
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const handleSendMessage = async (event: React.FormEvent) => {
     event.preventDefault();
-
     if (!userMessage.trim()) return;
 
     setChatHistory((prevHistory) => [...prevHistory, `You: ${userMessage}`]);
@@ -53,19 +52,19 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
       <ResizableBox
         width={300}
         height={isMinimized ? 50 : 400}
-        minConstraints={[200, 50]}
+        minConstraints={[250, 50]}
         maxConstraints={[600, 600]}
         axis="both"
         resizeHandles={['nw']}
+        className="rounded-lg border border-gray-700 shadow-lg overflow-hidden bg-[#1a1a1a]"
       >
-        <div className="bg-[#404040] text-white rounded-lg shadow-lg flex flex-col resize overflow-hidden border border-[#181818] relative">
-          <div className="absolute top-0 left-0 w-4 h-4 cursor-nw-resize bg-gray-600 rounded-full"></div>
-
-          <div className="flex justify-between items-center p-2">
-            <span className="text-lg font-bold">Chat</span>
+        <div className="flex flex-col h-full">
+          {/* Header with Minimize Button */}
+          <div className="flex justify-between items-center p-3 bg-[#2c2c2c] text-white border-b border-gray-700">
+            <span className="text-lg font-semibold">Chat</span>
             <button
               onClick={toggleMinimize}
-              className="text-3xl font-extrabold text-gray-300 hover:text-white"
+              className="text-xl font-bold text-gray-300 hover:text-white"
             >
               {isMinimized ? '＋' : '－'}
             </button>
@@ -73,14 +72,15 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
 
           {!isMinimized && (
             <>
-              <div className="flex-grow p-4 overflow-y-auto space-y-2">
+              {/* Chat History */}
+              <div className="flex-grow p-4 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
                 {chatHistory.map((message, index) => {
                   const isAIMessage = message.startsWith("AI:");
                   return (
                     <p
                       key={index}
                       className={`text-sm p-2 rounded-lg ${
-                        isAIMessage ? "bg-gray-700 text-gray-200" : "bg-gray-800 text-white"
+                        isAIMessage ? "bg-gray-700 text-gray-300" : "bg-gray-800 text-white"
                       }`}
                     >
                       {message}
@@ -90,19 +90,20 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
                 {isLoading && <p className="text-sm text-gray-400">AI is typing...</p>}
               </div>
 
-              <form className="flex p-4 border-t border-[#181818]" onSubmit={handleSendMessage}>
+              {/* Message Input */}
+              <form className="flex p-3 border-t border-gray-700" onSubmit={handleSendMessage}>
                 <input
                   type="text"
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   placeholder="Type your message..."
                   required
-                  className="flex-grow p-2 border border-[#181818] rounded-lg mr-2 bg-[#181818] text-white placeholder-gray-400"
+                  className="flex-grow p-2 border border-gray-600 rounded-lg mr-2 bg-[#262626] text-white placeholder-gray-400 focus:ring-2 focus:ring-green-400 outline-none"
                 />
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#31854D] text-white rounded-lg disabled:bg-gray-600 hover:bg-[#1f7c3d]"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg disabled:bg-gray-600 hover:bg-green-700 transition"
                 >
                   Send
                 </button>
