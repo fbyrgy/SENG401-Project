@@ -4,27 +4,41 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import Header from '../../components/header';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import StockChart from '../../components/stock_chart';
 import Search from '../../components/search';
 import Chatbox from '../../components/chatbox';
+import TopMovers from '../../components/top_movers';
+import News from "../../components/news";
 import Link from 'next/link';
-import TopMovers from '@/app/components/top_movers';
+import Button from '@mui/material/Button';
+
+interface NewsArticle {
+  headline: string;
+  source: string;
+  link: string;
+}
 
 export default function StockPage() {
   const params = useParams();
   const ticker = Array.isArray(params.ticker) ? params.ticker[0] : params.ticker;
   const { userId, isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false);
-  const [newsData, setNewsData] = useState<any[]>([]);
+  const [newsData, setNewsData] = useState<NewsArticle[]>([]);
   const [isValidTicker, setIsValidTicker] = useState<boolean | null>(null);
 
   useEffect(() => {
+
     const fetchNews = async () => {
       try {
-        const response = await axios.get('API'); // Replace with actual API
-        setNewsData(response.data?.articles || []);
+        const response = await axios.get<{ articles: NewsArticle[] }>(
+          `http://127.0.0.1:5003/news?keyword=${ticker}&limit=5`
+        );
+        if (response.data && Array.isArray(response.data.articles)) {
+          setNewsData(response.data.articles); 
+        } else {
+          console.error("API response does not contain expected articles:", response.data);
+        }
       } catch (error) {
         console.error('Error fetching news:', error);
       }
@@ -117,58 +131,10 @@ export default function StockPage() {
           </div>
 
           {/* News Section */}
-          <TableContainer
-            component={Paper}
-            sx={{
-              width: '100%',
-              borderRadius: '10%',
-              background: '#000',
-              maxHeight: '400px',
-              overflowY: 'auto',
-              marginTop: '40px',
-              padding: '10px',
-              borderBottom: '1px solid #181818',
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: '#fff', background: '#181818', fontSize: '18px', fontWeight: 'bold' }}>
-                    Top Financial News
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {newsData.length > 0 ? (
-                  newsData.map((news, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ color: '#fff', borderBottom: '1px solid #181818', fontSize: '14px' }}>
-                        {news.title}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 1
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 2
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff', textAlign: 'center', padding: '20px', background: '#404040' }}>
-                        Story 3
-                      </TableCell>
-                    </TableRow>
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+            <div className="w-full mt-6">
+            <h2 className="text-center mb-4">Top Stories</h2>
+            <News newsData={newsData} />
+            </div>
         </div>
 
         {/* Right Section (Buttons, Gainers, Losers) */}
