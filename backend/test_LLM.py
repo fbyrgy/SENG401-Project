@@ -1,7 +1,7 @@
 import unittest
 import json
 from unittest.mock import patch, MagicMock
-from LLM import app, client  # Import `client` directly to patch it
+from LLM import app, client 
 
 class TestLLM(unittest.TestCase):
     def setUp(self):

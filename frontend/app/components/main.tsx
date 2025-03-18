@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Chatbox from './chatbox'; 
 import StockTable from './stock_table';
@@ -31,16 +30,18 @@ const StockDashboard = () => {
     // Fetch news data from API
     const fetchNews = async () => {
       try {
-        const response = await axios.get<{ articles: NewsArticle[] }>(
-          `http://127.0.0.1:5003/news?keyword=stocks&limit=5`
-        );
-        if (response.data && Array.isArray(response.data.articles)) {
-          setNewsData(response.data.articles); 
-        } else {
-          console.error("API response does not contain expected articles:", response.data);
-        }
+      const response = await fetch(`http://127.0.0.1:5003/news?keyword=stocks&limit=5`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch news: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data && Array.isArray(data.articles)) {
+        setNewsData(data.articles);
+      } else {
+        console.error("API response does not contain expected articles:", data);
+      }
       } catch (error) {
-        console.error('Error fetching news:', error);
+      console.error('Error fetching news:', error);
       }
     };
 
