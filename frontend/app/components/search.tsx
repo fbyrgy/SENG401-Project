@@ -93,7 +93,7 @@ export default function Search() {
   };
 
   return (
-    <div className="flex w-full h-[120px] shadow-md items-center justify-between px-4 bg-background">
+    <div className="flex w-full h-[120px] items-center justify-between px-4 bg-background">
       {/* Search Bar */}
       <div className="flex items-center justify-center flex-grow ml-4 relative">
         <TextField

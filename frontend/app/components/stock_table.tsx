@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
+const TIMEOUT_DELAY = 3000; 
+
 const StockTable = ({ stockData, title }) => {
+  const [loadingExceeded, setLoadingExceeded] = useState(false);
+
+  useEffect(() => {
+    if (!stockData || stockData.length === 0) {
+      const timeout = setTimeout(() => {
+        setLoadingExceeded(true);
+      }, TIMEOUT_DELAY); 
+
+      return () => clearTimeout(timeout);
+    }
+  }, [stockData]);
 
   if (!stockData || stockData.length === 0) {
-    return <h2 style={{ color: 'white', marginBottom: '10px' }}>Loading {title}...</h2>;
+    return (
+      <h2 style={{ color: 'white', marginBottom: '10px' }}>
+        {loadingExceeded ? `API credit limit exceeded for ${title}. Please refresh the page in 1 minute.` : `Loading ${title}...`}
+      </h2>
+    );
   }
 
   return (
