@@ -9,7 +9,9 @@ from flask_cors import CORS
 
 load_dotenv()  
 
-app = Flask(__name__)
+from flask import Blueprint
+
+app = Blueprint('news', __name__)
 CORS(app)
 
 @app.route('/news', methods=['GET'])

@@ -5,8 +5,9 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
 import os
+from flask import Blueprint
 
-app = Flask(__name__)
+app = Blueprint('stockmovers', __name__)
 CORS(app)   
 load_dotenv()
 API_KEY = os.getenv("FMP_API_KEY")

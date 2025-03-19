@@ -11,7 +11,9 @@ load_dotenv()
 # Get database password
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-app = Flask(__name__)
+from flask import Blueprint
+
+app = Blueprint('connection', __name__)
 CORS(app)
 
 # Database connection function

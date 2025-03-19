@@ -13,8 +13,9 @@ import requests
 
 
 BASE_URL = "https://api.twelvedata.com"
-app = Flask(__name__)
+from flask import Blueprint
 
+app = Blueprint('stocks', __name__)
 CORS(app)
 # loads .env variables
 load_dotenv()

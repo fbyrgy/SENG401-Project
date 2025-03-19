@@ -3,8 +3,9 @@ from google import genai
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS  
+from flask import Blueprint
 
-app = Flask(__name__)
+app = Blueprint('llm', __name__)
 CORS(app)
 
 load_dotenv()
