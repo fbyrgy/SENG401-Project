@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
 
       // Get the user ID
-      const response = await fetch(`${BACKEND_URL}/get_user_id`, {
+      const response = await fetch(`${BACKEND_URL}/connection/get_user_id`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
