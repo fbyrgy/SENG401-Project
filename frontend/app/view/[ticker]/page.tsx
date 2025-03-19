@@ -11,7 +11,7 @@ import TopMovers from '../../components/top_movers';
 import StockNews from "../../components/news";
 import Link from 'next/link';
 import Button from '@mui/material/Button';
-import { BACKEND_URL } from '../config';
+import { BACKEND_URL } from '../../config';
 
 interface NewsArticle {
   headline: string;

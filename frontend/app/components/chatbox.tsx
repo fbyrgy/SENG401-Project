@@ -17,7 +17,7 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('${BACKEND_URL}/llm/generate', {
+      const response = await fetch(`${BACKEND_URL}/llm/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage, ticker }),
