@@ -1,7 +1,13 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
-const News = ({ newsData }: { newsData: any[] }) => {
+interface NewsItem {
+  headline: string;
+  link: string;
+  source: string;
+}
+
+const News = ({ newsData }: { newsData: NewsItem[] }) => {
   return (
     <TableContainer
       component={Paper}
