@@ -183,7 +183,7 @@ return (
       </div>
     </div>
     {/* Chatbox */}
-    {showChatbox && <Chatbox ticker={''} />}
+    {showChatbox && ticker && <Chatbox ticker={ticker} />}
   </div>
 );
 }
