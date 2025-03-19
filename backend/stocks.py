@@ -104,33 +104,34 @@ def get_time_series():
         return jsonify({"error": str(e)}), 500
 
 # endpoint to determine if a stock ticker is valid
+td_validate = TDClient(apikey=os.getenv("twelvedata_validate_API_KEY"))
 @app.route('/validate_ticker', methods=['GET'])
 def validate_ticker():
     ticker = request.args.get('ticker')
-    ticker = ticker.upper()
 
     if not ticker:
-        return {"error": "Missing required parameter: ticker"}, 400
+        return jsonify({"error": "Missing required parameter: ticker"}), 400
 
     try:
-        # The file has ';' as the delimiter
-        df = pd.read_csv("valid_tickers.csv", delimiter=";")  
+        # Call TwelveData's Quote API using the validation API key
+        quote_data = td_validate.quote(symbol=ticker)
 
-        if "symbol" not in df.columns or "name" not in df.columns:
-            return {"error": "CSV file format is incorrect"}, 500
+        if quote_data is None:
+            return jsonify({"valid": False}), 200  # Ticker is invalid
 
-        row = df[df["symbol"] == ticker]
+        quote_df = quote_data.as_pandas()
 
-        if not row.empty:
-            return {
-                "valid": True,
-                "name": row.iloc[0]["name"]
-            }
+        if quote_df.empty or "name" not in quote_df.columns:
+            return jsonify({"valid": False}), 200  # No data means invalid ticker
 
-        return {"valid": False}
+        return jsonify({
+            "valid": True,
+            "name": quote_df.iloc[0]["name"]
+        })
 
     except Exception as e:
-        return {"error": str(e)}, 500
+        return jsonify({"error": str(e)}), 500
+
 
 # endpoint to get the current price of a stock
 @app.route('/quote', methods=['GET'])
@@ -164,5 +165,5 @@ def current_price():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5004)
 

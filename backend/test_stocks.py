@@ -3,10 +3,14 @@ import json
 import pandas as pd
 from unittest.mock import patch, MagicMock
 from stocks import app, td 
+from stocks import app as app_blueprint
+from flask import Flask
 
 class TestStocks(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app = Flask(__name__)
+        self.app.register_blueprint(app_blueprint, url_prefix="/stocks")
+        self.client = self.app.test_client()
         self.app.testing = True
 
     @patch("stocks.td.time_series")
@@ -19,7 +23,7 @@ class TestStocks(unittest.TestCase):
 
         mock_time_series.return_value.as_pandas.return_value = mock_df
 
-        response = self.app.get("/time_series?ticker=AAPL&interval=1day&start_date=2025-01-01&end_date=2025-02-01")
+        response = self.client.get("/stocks/time_series?ticker=AAPL&interval=1day&start_date=2025-01-01&end_date=2025-02-01")
         response_json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
@@ -30,7 +34,7 @@ class TestStocks(unittest.TestCase):
 
 
     def test_time_series_missing_params(self):
-        response = self.app.get("/time_series?ticker=AAPL")  
+        response = self.client.get("/stocks/time_series?ticker=AAPL")  
 
         self.assertEqual(response.status_code, 400)
         self.assertIn("Missing required parameters", response.data.decode())
@@ -40,7 +44,7 @@ class TestStocks(unittest.TestCase):
   
         mock_time_series.return_value.as_pandas.return_value = MagicMock(empty=True)
 
-        response = self.app.get("/time_series?ticker=AAPL&interval=1day&start_date=2024-01-01&end_date=2024-02-01")
+        response = self.client.get("/stocks/time_series?ticker=AAPL&interval=1day&start_date=2024-01-01&end_date=2024-02-01")
 
         self.assertEqual(response.status_code, 500)
         self.assertIn("No data available", response.data.decode())
@@ -50,45 +54,38 @@ class TestStocks(unittest.TestCase):
 
         mock_time_series.side_effect = Exception("API error")
 
-        response = self.app.get("/time_series?ticker=AAPL&interval=1day&start_date=2024-01-01&end_date=2024-02-01")
+        response = self.client.get("/stocks/time_series?ticker=AAPL&interval=1day&start_date=2024-01-01&end_date=2024-02-01")
 
         self.assertEqual(response.status_code, 500)
         self.assertIn("API error", response.data.decode())
     
-    @patch("stocks.pd.read_csv")  
-    def test_validate_ticker_success(self, mock_read_csv):
-        """Test a valid stock ticker lookup."""
+    @patch("stocks.td_validate.quote")
+    def test_validate_ticker_success(self, mock_quote):
         
-        # Mock CSV DataFrame
-        mock_df = pd.DataFrame({
-            "symbol": ["AAPL", "NVDA"],
-            "name": ["Apple Inc.", "Nvidia Corp."]
+        mock_quote.return_value.as_pandas.return_value = pd.DataFrame({
+            "name": ["Apple Inc."]
         })
 
-        mock_read_csv.return_value = mock_df 
+        response = self.client.get("/stocks/validate_ticker?ticker=AAPL")
 
-        response = self.app.get("/validate_ticker?ticker=AAPL")
-        
-        self.assertEqual(response.status_code, 200)  
-        self.assertIn("Apple Inc.", response.data.decode()) 
-    
-    @patch("stocks.pd.read_csv")  
-    def test_validate_ticker_invalid(self, mock_read_csv):
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertTrue(data["valid"])
+        self.assertEqual(data["name"], "Apple Inc.")
 
-        mock_df = pd.DataFrame({
-            "symbol": ["AAPL", "NVDA"],
-            "name": ["Apple Inc.", "Nvidia Corp."]
-        })
+    @patch("stocks.td_validate.quote")
+    def test_validate_ticker_invalid(self, mock_quote):
 
-        mock_read_csv.return_value = mock_df 
+        mock_quote.return_value.as_pandas.return_value = pd.DataFrame()
 
-        response = self.app.get("/validate_ticker?ticker=NONE123")
-        
-        self.assertEqual(response.status_code, 200)  
-        self.assertIn("false", response.data.decode()) 
+        response = self.client.get("/stocks/validate_ticker?ticker=NONE123")
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertFalse(data["valid"])
         
     def test_validate_ticker_missing_param(self):
-        response = self.app.get("/validate_ticker?ticker=")
+        response = self.client.get("/stocks/validate_ticker?ticker=")
         
         self.assertEqual(response.status_code, 400)
         self.assertIn("Missing required parameter: ticker", response.data.decode())
@@ -105,7 +102,7 @@ class TestStocks(unittest.TestCase):
 
         mock_quote.return_value.as_pandas.return_value = mock_df
 
-        response = self.app.get("/quote?ticker=AAPL")
+        response = self.client.get("/stocks/quote?ticker=AAPL")
         response_json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
@@ -115,7 +112,7 @@ class TestStocks(unittest.TestCase):
         self.assertEqual(response_json["percent_change"], 1.5)
 
     def test_current_price_missing_ticker(self):
-        response = self.app.get("/quote")  
+        response = self.client.get("/stocks/quote")  
 
         self.assertEqual(response.status_code, 400)
         self.assertIn("error", response.get_json())
@@ -125,7 +122,7 @@ class TestStocks(unittest.TestCase):
     def test_current_price_no_data(self, mock_quote):
         mock_quote.return_value.as_pandas.return_value = MagicMock(empty=True)
 
-        response = self.app.get("/quote?ticker=AAPL")
+        response = self.client.get("/stocks/quote?ticker=AAPL")
 
         self.assertEqual(response.status_code, 500)
         self.assertIn("error", response.get_json())
@@ -135,7 +132,7 @@ class TestStocks(unittest.TestCase):
     def test_current_price_invalid_ticker(self, mock_quote):
         mock_quote.return_value = None
 
-        response = self.app.get("/quote?ticker=INVALID")
+        response = self.client.get("/stocks/quote?ticker=INVALID")
 
         self.assertEqual(response.status_code, 404)
         self.assertIn("error", response.get_json())
@@ -145,7 +142,7 @@ class TestStocks(unittest.TestCase):
     def test_current_price_api_failure(self, mock_quote):
         mock_quote.side_effect = Exception("API error")
 
-        response = self.app.get("/quote?ticker=AAPL")
+        response = self.client.get("/stocks/quote?ticker=AAPL")
 
         self.assertEqual(response.status_code, 500)
         self.assertIn("error", response.get_json())

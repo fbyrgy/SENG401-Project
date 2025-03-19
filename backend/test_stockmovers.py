@@ -1,11 +1,14 @@
 import unittest
 import json
 from unittest.mock import patch, MagicMock
-from stockmovers import app 
+from stockmovers import app as stockmovers_blueprint
+from flask import Flask
 
 class TestStockMovers(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app = Flask(__name__)
+        self.app.register_blueprint(stockmovers_blueprint, url_prefix="/stockmovers")
+        self.client = self.app.test_client()
         self.app.testing = True
 
     @patch("stockmovers.requests.get")  
@@ -18,7 +21,7 @@ class TestStockMovers(unittest.TestCase):
         ]
         mock_get.return_value = mock_response
 
-        response = self.app.get("/biggest_gainers")
+        response = self.client.get("/stockmovers/biggest_gainers")
         response_json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
@@ -37,7 +40,7 @@ class TestStockMovers(unittest.TestCase):
         ]
         mock_get.return_value = mock_response
 
-        response = self.app.get("/biggest_losers")
+        response = self.client.get("/stockmovers/biggest_losers")
         response_json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
@@ -50,7 +53,7 @@ class TestStockMovers(unittest.TestCase):
     def test_biggest_gainers_api_failure(self, mock_get):
         mock_get.side_effect = Exception("API error")
 
-        response = self.app.get("/biggest_gainers")
+        response = self.client.get("/stockmovers/biggest_gainers")
         self.assertEqual(response.status_code, 200)
         self.assertIn("error", response.get_json())
 
@@ -58,7 +61,7 @@ class TestStockMovers(unittest.TestCase):
     def test_biggest_losers_api_failure(self, mock_get):
         mock_get.side_effect = Exception("API error")
 
-        response = self.app.get("/biggest_losers")
+        response = self.client.get("/stockmovers/biggest_losers")
         self.assertEqual(response.status_code, 200)
         self.assertIn("error", response.get_json())
 

@@ -1,11 +1,14 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from connection import app
+from connection import app as connection_blueprint
 import json
+from flask import Flask
 
 class TestConnection(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app = Flask(__name__)
+        self.app.register_blueprint(connection_blueprint, url_prefix="/connection")
+        self.client = self.app.test_client()
         self.app.testing = True
 
     @patch('connection.get_db_connection')
@@ -21,7 +24,7 @@ class TestConnection(unittest.TestCase):
             "password": "securepassword"
         }
 
-        response = self.app.post('/add_user', 
+        response = self.client.post('/connection/add_user', 
                                  data=json.dumps(request_data), 
                                  content_type='application/json')
         
@@ -37,7 +40,7 @@ class TestConnection(unittest.TestCase):
     @patch('connection.get_db_connection')
     def test_add_user_missing_email(self, mock_db_connection):
 
-        response = self.app.post('/add_user', 
+        response = self.client.post('/connection/add_user', 
                                  data=json.dumps({"password": "securepassword"}), 
                                  content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -46,7 +49,7 @@ class TestConnection(unittest.TestCase):
     @patch('connection.get_db_connection') 
     def test_add_user_missing_password(self, mock_db_connection):
 
-        response = self.app.post('/add_user', 
+        response = self.client.post('/connection/add_user', 
                                  data=json.dumps({"email": "test@example.com"}), 
                                  content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -66,7 +69,7 @@ class TestConnection(unittest.TestCase):
             "password": "securepassword"
         }
         
-        response = self.app.post('/add_user', 
+        response = self.client.post('/connection/add_user', 
                                  data=json.dumps(request_data), 
                                  content_type='application/json')
         
@@ -90,7 +93,7 @@ class TestConnection(unittest.TestCase):
             "stock_ticker": "AAPL"
         }
 
-        response = self.app.post('/add_watchlist', 
+        response = self.client.post('/connection/add_watchlist', 
                                     data=json.dumps(request_data), 
                                     content_type='application/json')
         
@@ -117,7 +120,7 @@ class TestConnection(unittest.TestCase):
             "stock_ticker": "AAPL"
         }
 
-        response = self.app.post('/add_watchlist', 
+        response = self.client.post('/connection/add_watchlist', 
                                     data=json.dumps(request_data), 
                                     content_type='application/json')
         
@@ -138,7 +141,7 @@ class TestConnection(unittest.TestCase):
             "stock_ticker": "AAPL"
         }
         
-        response = self.app.post('/add_watchlist', 
+        response = self.client.post('/connection/add_watchlist', 
                                     data=json.dumps(request_data), 
                                     content_type='application/json')
         
@@ -159,7 +162,7 @@ class TestConnection(unittest.TestCase):
         mock_cursor.fetchone.return_value = {"user_id": 1}
         mock_cursor.fetchall.return_value = [{"stock_ticker": "AAPL"}, {"stock_ticker": "NVDA"}]
         
-        response = self.app.get('/get_watchlist?email=test@example.com')
+        response = self.client.get('/connection/get_watchlist?email=test@example.com')
         
         self.assertEqual(response.status_code, 200)
         self.assertIn("AAPL", response.get_data(as_text=True))
@@ -176,7 +179,7 @@ class TestConnection(unittest.TestCase):
         mock_cursor.fetchone.return_value = {"user_id": 1}
         mock_cursor.fetchall.return_value = [{"stock_ticker": "AAPL"}, {"stock_ticker": "NVDA"}]
         
-        response = self.app.get('/get_watchlist?email=test@example.com')
+        response = self.client.get('/connection/get_watchlist?email=test@example.com')
         
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("PLTR", response.get_data(as_text=True))
@@ -191,7 +194,7 @@ class TestConnection(unittest.TestCase):
         mock_cursor.fetchone.return_value = {"user_id": 1}
         
         request_data = {"email": "test@example.com"}
-        response = self.app.post('/get_user_id', 
+        response = self.client.post('/connection/get_user_id', 
                                  data=json.dumps(request_data), 
                                  content_type='application/json')
         
@@ -208,7 +211,7 @@ class TestConnection(unittest.TestCase):
         mock_cursor.fetchone.return_value = None
         
         request_data = {"email": "unknown@example.com"}
-        response = self.app.post('/get_user_id', 
+        response = self.client.post('/connection/get_user_id', 
                                  data=json.dumps(request_data), 
                                  content_type='application/json')
         
@@ -225,7 +228,7 @@ class TestConnection(unittest.TestCase):
         mock_cursor.execute.side_effect = Exception("Database error")
         
         request_data = {"email": "test@example.com"}
-        response = self.app.post('/get_user_id', 
+        response = self.client.post('/connection/get_user_id', 
                                  data=json.dumps(request_data), 
                                  content_type='application/json')
         
