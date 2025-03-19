@@ -8,7 +8,7 @@ import StockChart from '../../components/stock_chart';
 import Search from '../../components/search';
 import Chatbox from '../../components/chatbox';
 import TopMovers from '../../components/top_movers';
-import News from "../../components/news";
+import StockNews from "../../components/news";
 import Link from 'next/link';
 import Button from '@mui/material/Button';
 
@@ -107,91 +107,82 @@ export default function StockPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen w-full bg-[#121212] border border-[#181818] text-white flex flex-col items-center p-6">
-      {/* Header */}
-      <div className="w-full h-[59px] bg-[#181818] shadow-md flex items-center justify-between px-4 fixed top-0 z-50">
-        <Header />
-      </div>
 
-      {/* Search Bar */}
-      <div className="mt-[40px] flex w-full h-[120px] items-center justify-between">
-        <Search />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex flex-row w-full max-w-[1200px] gap-10 mt-6">
-        {/* Left Section (Stock Chart & News) */}
-        <div className="flex flex-col items-center w-[820px]">
-
-          {/* Stock Chart */}
-          <div className="w-full bg-[#404040] rounded-[3%] p-4">
-            <h2 className="text-white text-lg mb-4 text-center"></h2>
-            {ticker && <StockChart ticker={ticker} />}
-          </div>
-
-          {/* News Section */}
-            <div className="w-full mt-6">
-            <h2 className="text-center mb-4">Top Stories</h2>
-            <News newsData={newsData} />
-            </div>
-        </div>
-
-        {/* Right Section (Buttons, Gainers, Losers) */}
-        <div className="flex flex-col w-[300px] gap-6">
-          {/* Add to Watchlist Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              width: '100%',
-              backgroundColor: '#2596BE',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              borderRadius: '25px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-              transition: '0.3s',
-              '&:hover': {
-                backgroundColor: '#1B7A99',
-                transform: 'scale(1.05)',
-              },
-            }}
-            onClick={handleWatchlistAddition}
-          >
-            Add to Watchlist
-          </Button>
-
-          {/* AI Assistant Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              width: '100%',
-              backgroundColor: '#2596BE',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              borderRadius: '25px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-              transition: '0.3s',
-              '&:hover': {
-                backgroundColor: '#1B7A99',
-                transform: 'scale(1.05)',
-              },
-            }}
-            onClick={handleChatboxToggle}
-          >
-            Try our AI Advisor
-          </Button>
-
-          {/* Top Gainers & Losers */}
-          <TopMovers direction="gainers" title="Top Gainers" />
-          <TopMovers direction="losers" title="Top Losers" />
-        </div>
-      </div>
-
-      {/* Chatbox */}
-      {showChatbox && ticker && <Chatbox ticker={ticker} />}
-
+return (
+  <div className="min-h-screen w-full bg-[#121212] text-white flex flex-col items-center p-6">
+    {/* Header */}
+    <div className="w-full h-[59px] bg-[#181818] shadow-md flex items-center justify-between px-4 fixed top-0 z-50">
+      <Header />
     </div>
-  );
+
+    {/* Search Bar */}
+    <div className="mt-16 w-full flex justify-center">
+      <Search />
+    </div>
+
+    {/* Main Content */}
+    <div className="flex flex-col lg:flex-row w-full max-w-[1200px] gap-10 mt-6">
+      {/* Left Section (Stock Chart & News) */}
+      <div className="flex flex-col items-center w-full lg:w-[820px]">
+        {/* Stock Chart */}
+        <div className="w-full bg-[#404040] rounded-[3%] p-4">
+          {ticker && <StockChart ticker={ticker} />}
+        </div>
+
+        {/* News Section */}
+             {/* Recent News */}
+      <h2 className="text-center mb-4 text-white">Top Stories</h2>
+      <StockNews newsData={newsData} />
+    </div>
+
+      {/* Right Section (Buttons, Gainers, Losers) */}
+      <div className="flex flex-col w-full lg:w-[300px] gap-6">
+        <Button
+          variant="contained"
+          sx={{
+            width: '100%',
+            backgroundColor: '#2596BE',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            borderRadius: '25px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            transition: '0.3s',
+            '&:hover': {
+              backgroundColor: '#1B7A99',
+              transform: 'scale(1.05)',
+            },
+          }}
+          onClick={handleWatchlistAddition}
+        >
+          Add to Watchlist
+        </Button>
+        
+        <Button
+          variant="contained"
+          sx={{
+            width: '100%',
+            backgroundColor: '#2596BE',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            borderRadius: '25px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            transition: '0.3s',
+            '&:hover': {
+              backgroundColor: '#1B7A99',
+              transform: 'scale(1.05)',
+            },
+          }}
+          onClick={handleChatboxToggle}
+        >
+          Try our AI Advisor
+        </Button>
+
+        <TopMovers direction='gainers' title='Top Gainers'/>
+        <TopMovers direction='losers' title='Top Losers'/>
+      </div>
+    </div>
+    {/* Chatbox */}
+    {showChatbox && <Chatbox ticker={''} />}
+  </div>
+);
 }
