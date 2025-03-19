@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from google import genai
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS  
-from flask import Blueprint
 
 app = Blueprint('llm', __name__)
 CORS(app)

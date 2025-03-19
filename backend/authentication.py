@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 from connection import get_db_connection
 import mysql.connector
 import bcrypt
-from flask import Blueprint
 
 app = Blueprint('authentication', __name__)
 CORS(app)

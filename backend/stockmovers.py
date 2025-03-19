@@ -1,11 +1,10 @@
 # Using the stock gainers and losers endpoints from FMP
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Blueprint
 from flask_cors import CORS
 import requests
 import os
-from flask import Blueprint
 
 app = Blueprint('stockmovers', __name__)
 CORS(app)   

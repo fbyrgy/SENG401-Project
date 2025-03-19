@@ -1,17 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
 import os
-from dotenv import load_dotenv  #pip install python-dotenv
+from dotenv import load_dotenv  # pip install python-dotenv
 
 # Load environment variables from .env
 load_dotenv()
 
-# Get database password
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Get database credentials
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_NAME = os.getenv("DB_NAME", "finance_app")
 
-from flask import Blueprint
 
 app = Blueprint('connection', __name__)
 CORS(app)
@@ -19,10 +21,10 @@ CORS(app)
 # Database connection function
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password= DB_PASSWORD,
-        database="finance_app"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
 
 # Route to add a new user
@@ -63,8 +65,8 @@ def add_watchlist():
 
     if not user_id or not stock_ticker:
         return jsonify({"error": "User ID and stock ticker are required"}), 400
+    
     stock_ticker = stock_ticker.upper()
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -80,7 +82,6 @@ def add_watchlist():
         conn.commit()
 
         return jsonify({"message": f"Stock {stock_ticker} added to watchlist!"}), 201
-
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
     except Exception as e:
@@ -89,7 +90,6 @@ def add_watchlist():
         cursor.close()
         conn.close()
 
-    
 # Route to get watchlist tickers by user's email
 @app.route('/get_watchlist', methods=['GET'])
 def get_watchlist():
@@ -124,7 +124,7 @@ def get_watchlist():
     finally:
         cursor.close()
         conn.close()
-        
+
 # Route to get user_id by email
 @app.route('/get_user_id', methods=['POST'])
 def get_user_id():
@@ -153,7 +153,6 @@ def get_user_id():
         cursor.close()
         conn.close()
 
-
-
+# Run the Flask app if executed directly
 if __name__ == '__main__':
     app.run(port=5001)

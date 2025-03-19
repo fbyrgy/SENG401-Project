@@ -2,7 +2,7 @@
 # Twelve Data API
 # pip install twelvedata
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 import os
 import pandas as pd
@@ -13,7 +13,6 @@ import requests
 
 
 BASE_URL = "https://api.twelvedata.com"
-from flask import Blueprint
 
 app = Blueprint('stocks', __name__)
 CORS(app)

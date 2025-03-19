@@ -3,13 +3,11 @@ import json
 import http.client
 import urllib.parse
 import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from dotenv import load_dotenv
 from flask_cors import CORS
 
 load_dotenv()  
-
-from flask import Blueprint
 
 app = Blueprint('news', __name__)
 CORS(app)
