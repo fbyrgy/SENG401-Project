@@ -22,7 +22,7 @@ export default function LoginPage() {
         const password = (e.target as HTMLFormElement).password.value;
 
         try {
-            const response = await fetch(`${BACKEND_URL}/connection/login`, {
+            const response = await fetch(`${BACKEND_URL}/authentication/login`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
