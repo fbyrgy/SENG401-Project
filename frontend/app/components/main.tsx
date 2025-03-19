@@ -139,48 +139,60 @@ const StockDashboard = () => {
     setShowChatbox(!showChatbox);
   };
 
-  return (
-    <div className="flex justify-center flex-row items-start gap-10 p-5 bg-background">
-
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Watchlist Table - only rendered if it is not empty */}
-        {watchlistTickers.length > 0 && (
-            <StockTable stockData={watchlistData} title="Your Watchlist" />
-        )}
-        {/* Popular Symbols table */}
-        <StockTable stockData={stockData} title="Popular Symbols" />
-        {/* Recent News */}
-        <h2 className="text-center mb-4" style={{ color: 'white'}}>Top Stories</h2>
-        <StockNews newsData={newsData} />
-      </div>
-
-      {/* Right Section */}
-      <div style={{ display: 'flex', flexDirection: 'column', width: '300px', gap: '20px' }}>
-        {/* Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            margin: 'auto',
-            marginBottom: '10px',
-            width: '300px',
-            marginLeft: '0px',
-          }}
-          onClick={handleChatboxToggle} // chatbox visibility
-        >
-          Try our AI Advisor
-        </Button>
-
-        {/* Top Gainers Table */}
-        <TopMovers direction="gainers" title="Top Gainers" />
-        {/* Top Losers Table */}
-        <TopMovers direction="losers" title="Top Losers" />
-      </div>
-
-      {/* Conditionally Render the Chatbox */}
-      {showChatbox && <Chatbox ticker={''} />}
+return (
+  <div className="flex flex-col md:flex-row justify-center items-start gap-6 md:gap-10 p-5 bg-background w-full">
+    {/* Left Section */}
+    <div className="flex flex-col items-center w-full md:w-[700px]">
+      {/* Watchlist Table */}
+      {watchlistTickers.length > 0 && (
+        <StockTable stockData={watchlistData} title="Your Watchlist" />
+      )}
+      {/* Popular Symbols Table */}
+      <StockTable stockData={stockData} title="Popular Symbols" />
+      
+      {/* Recent News */}
+      <h2 className="text-center mb-4 text-white">Top Stories</h2>
+      <StockNews newsData={newsData} />
     </div>
-  );
+
+    {/* Right Section */}
+    <div className="flex flex-col w-full lg:w-[300px] gap-6">
+      {/* Button */}
+      <Button
+        variant="contained"
+        sx={{
+          width: '100%',
+          backgroundColor: '#2596BE',
+          fontWeight: 'bold',
+          textTransform: 'none',
+          borderRadius: '25px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+          transition: '0.3s',
+          '&:hover': {
+            backgroundColor: '#1B7A99',
+            transform: 'scale(1.05)',
+          },
+        }}
+        onClick={handleChatboxToggle}
+      >
+        Try our AI Advisor
+      </Button>
+
+      {/* Top Gainers Table */}
+      <TopMovers direction="gainers" title="Top Gainers" />
+      {/* Top Losers Table */}
+      <TopMovers direction="losers" title="Top Losers" />
+    </div>
+
+    {/* Conditionally Render the Chatbox */}
+    {showChatbox && (
+      <div className="fixed bottom-5 right-5 md:relative md:bottom-auto md:right-auto w-full md:w-auto">
+        <Chatbox ticker={''} />
+      </div>
+    )}
+  </div>
+);
 };
 
 export default StockDashboard;
+
