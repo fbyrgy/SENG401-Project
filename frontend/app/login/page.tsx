@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';   
+import { BACKEND_URL } from '../config';
 
 export default function LoginPage() {
 
@@ -21,7 +22,7 @@ export default function LoginPage() {
         const password = (e.target as HTMLFormElement).password.value;
 
         try {
-            const response = await fetch("http://127.0.0.1:5002/login", {
+            const response = await fetch(`${BACKEND_URL}/connection/login`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",

@@ -11,6 +11,7 @@ import TopMovers from '../../components/top_movers';
 import StockNews from "../../components/news";
 import Link from 'next/link';
 import Button from '@mui/material/Button';
+import { BACKEND_URL } from '../config';
 
 interface NewsArticle {
   headline: string;
@@ -29,7 +30,7 @@ export default function StockPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5003/news?keyword=${ticker}&limit=5`);
+        const response = await fetch(`${BACKEND_URL}/news/news?keyword=${ticker}&limit=5`);
         if (!response.ok) {
           throw new Error(`Error fetching news: ${response.statusText}`);
         }
@@ -49,7 +50,7 @@ export default function StockPage() {
   useEffect(() => {
     const validateTicker = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5004/validate_ticker?ticker=${ticker}`);
+        const response = await fetch(`${BACKEND_URL}/stocks/validate_ticker?ticker=${ticker}`);
         const data = await response.json();
         setIsValidTicker(response.ok && data.valid);
       } catch (error) {
@@ -72,7 +73,7 @@ export default function StockPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5001/add_watchlist", {
+      const response = await fetch(`${BACKEND_URL}/connection/add_watchlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, stock_ticker: ticker }),

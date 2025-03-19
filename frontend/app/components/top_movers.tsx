@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { BACKEND_URL } from '../config';
 
 interface Stock {
   name: string;
@@ -18,7 +19,7 @@ const TopMovers = ({ direction, title }: { direction: "gainers" | "losers"; titl
   useEffect(() => {
     const fetchTopMovers = async () => {
       try {
-        const endpoint = `http://localhost:5006/biggest_${direction}`;
+        const endpoint = `${BACKEND_URL}/stockmovers/biggest_${direction}`;
         const response = await fetch(endpoint);
         if (!response.ok) throw new Error("Failed to fetch data");
 

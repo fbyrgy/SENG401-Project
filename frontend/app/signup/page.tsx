@@ -6,6 +6,7 @@ import BackButton from '../components/back';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import { BACKEND_URL } from '../config';
 
 export default function LoginPage() {
     
@@ -39,7 +40,7 @@ export default function LoginPage() {
         setError("");
 
         try {
-            const response = await fetch("http://127.0.0.1:5001/add_user", {
+            const response = await fetch(`${BACKEND_URL}/connection/add_user`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

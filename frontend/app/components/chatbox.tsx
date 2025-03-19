@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css'; 
+import { BACKEND_URL } from '../config';
 
 const Chatbox = ({ ticker }: { ticker: string }) => {
   const [userMessage, setUserMessage] = useState('');
@@ -16,7 +17,7 @@ const Chatbox = ({ ticker }: { ticker: string }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5005/generate', {
+      const response = await fetch('${BACKEND_URL}/llm/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage, ticker }),

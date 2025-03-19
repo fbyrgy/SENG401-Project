@@ -7,6 +7,7 @@ import Chatbox from './chatbox';
 import StockTable from './stock_table';
 import TopMovers from './top_movers';
 import StockNews from "./news";
+import { BACKEND_URL } from '../config';
 
 interface NewsArticle {
   headline: string;
@@ -30,7 +31,7 @@ const StockDashboard = () => {
     // Fetch news data from API
     const fetchNews = async () => {
       try {
-      const response = await fetch(`http://127.0.0.1:5003/news?keyword=stocks&limit=5`);
+      const response = await fetch(`${BACKEND_URL}/news/news?keyword=stocks&limit=5`);
       if (!response.ok) {
         throw new Error(`Failed to fetch news: ${response.statusText}`);
       }
@@ -58,7 +59,7 @@ const StockDashboard = () => {
           return;
         }
     
-        const response = await fetch(`http://localhost:5001/get_watchlist?email=${encodeURIComponent(email)}`, {
+        const response = await fetch(`${BACKEND_URL}/stocks/get_watchlist?email=${encodeURIComponent(email)}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -78,7 +79,7 @@ const StockDashboard = () => {
     const fetchStockData = async () => {
       try {
         const requests = STOCK_TICKERS.map(async (symbol) => {
-          const response = await fetch(`http://localhost:5004/quote?ticker=${symbol}`);
+          const response = await fetch(`${BACKEND_URL}/stocks/quote?ticker=${symbol}`);
           if (!response.ok) throw new Error(`Failed to fetch data for ${symbol}`);
 
           const data = await response.json();
@@ -113,7 +114,7 @@ const StockDashboard = () => {
     const fetchWatchlistData = async () => {
       try {
         const requests = watchlistTickers.map(async (symbol) => {
-          const response = await fetch(`http://localhost:5004/quote?ticker=${symbol}`);
+          const response = await fetch(`${BACKEND_URL}/stocks/quote?ticker=${symbol}`);
           if (!response.ok) throw new Error(`Failed to fetch data for ${symbol}`);
   
           const data = await response.json();
