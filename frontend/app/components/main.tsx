@@ -21,9 +21,9 @@ const StockDashboard = () => {
   const [watchlistTickers, setWatchlistTickers] = useState<string[]>([]);
   const { isLoggedIn } = useAuth();
   const [showChatbox, setShowChatbox] = useState(false); // control visibility of chatbox
-  const [stockData, setStockData] = useState([]);
-  const [watchlistData, setWatchlistData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stockData, setStockData] = useState<{ name: string; symbol: string; price: number; change: number }[]>([]);
+  const [watchlistData, setWatchlistData] = useState<{ name: string; symbol: string; price: number; change: number }[]>([]);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     

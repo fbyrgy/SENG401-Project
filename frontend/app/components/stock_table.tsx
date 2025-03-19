@@ -6,7 +6,19 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const TIMEOUT_DELAY = 3000; 
 
-const StockTable = ({ stockData, title }) => {
+interface Stock {
+  name: string;
+  symbol: string;
+  price: number;
+  change: number;
+}
+
+interface StockTableProps {
+  stockData: Stock[];
+  title: string;
+}
+
+const StockTable: React.FC<StockTableProps> = ({ stockData, title }) => {
   const [loadingExceeded, setLoadingExceeded] = useState(false);
 
   useEffect(() => {

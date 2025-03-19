@@ -13,7 +13,7 @@ interface StockChartProps {
 
 export default function StockChart({ ticker }: StockChartProps) {
   const [stockData, setStockData] = useState([]);
-  const [stockName, setStockName] = useState<string | null>(null);
+  const [stockName] = useState<string | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [percentChange, setPercentChange] = useState<number | null>(null);
   const [minPrice, setMinPrice] = useState<number | null>(null);
@@ -78,7 +78,7 @@ export default function StockChart({ ticker }: StockChartProps) {
             setAreaColor(change >= 0 ? '#31854D' : '#A61111'); 
           }
 
-          const prices = formattedData.map((d) => d.price);
+          const prices = formattedData.map((d: { price: number }) => d.price);
           setMinPrice(Math.min(...prices));
           setMaxPrice(Math.max(...prices));
         }
@@ -90,7 +90,7 @@ export default function StockChart({ ticker }: StockChartProps) {
     fetchStockData();
     return () => clearTimeout(timeoutId); // Cleanup timeout on re-render
 
-  }, [ticker, range]);
+  }, [ticker, range, rangeOptions]);
 
   return (
     <div className="mt-8">
