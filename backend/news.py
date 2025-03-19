@@ -58,4 +58,4 @@ def get_news():
         return jsonify({'error': 'Failed to decode response', 'details': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5003)
+    app.run(port=5003)

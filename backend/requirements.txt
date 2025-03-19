@@ -6,3 +6,4 @@ python-dotenv
 twelvedata
 google-cloud
 google-genai
+gunicorn

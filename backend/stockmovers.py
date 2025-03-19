@@ -32,4 +32,4 @@ def get_biggest_losers():
     return jsonify(fetch_top_stocks("biggest-losers", n=3))
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5006)
+    app.run(port=5006)

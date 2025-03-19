@@ -164,5 +164,5 @@ def current_price():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5004, debug=True)
+    app.run(debug=True)
 
