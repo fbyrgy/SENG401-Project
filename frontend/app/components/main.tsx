@@ -59,7 +59,7 @@ const StockDashboard = () => {
           return;
         }
     
-        const response = await fetch(`${BACKEND_URL}/stocks/get_watchlist?email=${encodeURIComponent(email)}`, {
+        const response = await fetch(`${BACKEND_URL}/connection/get_watchlist?email=${encodeURIComponent(email)}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
