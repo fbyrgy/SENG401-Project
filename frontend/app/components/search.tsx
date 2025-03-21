@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { BACKEND_URL } from '../config';
 
 // Define the type for each symbol object returned from the API
 interface Symbol {
@@ -38,7 +39,7 @@ export default function Search() {
   // Fetch symbols with pagination support
   const fetchSymbols = useCallback(
     (query: string, pageNum: number) => {
-      fetch(`http://127.0.0.1:5004/symbol_search?symbol=${query}&page=${pageNum}`)
+      fetch(`${BACKEND_URL}/stocks/symbol_search?symbol=${query}&page=${pageNum}`)
         .then((response) => response.json())
         .then((data: { results: Symbol[] }) => {
           if (data.results) {

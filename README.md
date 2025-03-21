@@ -1,82 +1,41 @@
 # SENG401-Project
 
-## **Frontend Setup**
-1. Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
-2. Install dependencies (only needed the first time):
-   ```bash
-   npm install
-   npm install recharts
-   npm install react-resizable
-   ```
-3. Start the application:
-   ```bash
-   npm run dev
-   ```
-## **Backend Setup**
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Ensure all dependencies are installed:
-   ```bash
-   pip install -r requirements.txt # OR 
-   python -m pip install -r requirements.txt
-   ```
-3. Run the backend server:
-   ```bash
-   python app.py
-   ```
+If you want to deploy the app yourself, first fork the repo (ensure that 'copy the main branch only' is unchecked).
 
-## **Database Setup (MySQL)**
-1. Create and switch to the database
-   ```sql
-   CREATE DATABASE finance_app;
-   use finance_app;
-   ```
-2. Create the tables
-   ```sql
-   CREATE TABLE users (
-   user_id INT AUTO_INCREMENT PRIMARY KEY,
-   email VARCHAR(100) UNIQUE NOT NULL,
-   password_hash VARCHAR(255) NOT NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-   );
+## **Frontend Deployment**
+1. Login to [Vercel](https://vercel.com)
+2. Select the correct repository from github and deploy the **frontend** directory
+3. Navigate to the settings and select the **deployment** branch
 
-   CREATE TABLE watchlist (
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   user_id INT,
-   stock_ticker VARCHAR(10) NOT NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-   );
-   ```
+## **Backend and Database Deployment**
+1. Login to [Railway](https://railway.com)
+2. Add a new service from the correct github repository. Set the root directory to be **backend** and the branch to **deployment** in the settings
+3. Set the provider to be **Python** and set the deploy command to be ```gunicorn -w 4 -b 0.0.0.0:5000 main:app```
+4. Add and deploy a new MySQL service. Using a MySQL interface (CLI, MySQL Workbench, etc.) enter in the tables from [dump.sql](dump.sql)
 
 ## **Environment Variable Setup**
-1. Create the file
-   ```bash
-   cd backend
-   touch .env # Mac/Linux
-   new-item .env # Windows 
-
-2. Edit the file with your secrets
-   ```
-   TheNews_API_Key=YOUR_API_KEY
-   twelvedata_API_KEY=YOUR_API_KEY
-   LLM_API_KEY=YOUR_API_KEY
-   FMP_API_KEY=YOUR_API_KEY
-   DB_PASSWORD=YOUR_SECRET
-   ```
-   **API Key Registration Links:**
+1. Navigate to the settings of the backend github deployment
+2. In the **Variables** tab, enter in environment variables with this format:
+  ```
+  TheNews_API_Key=YOUR_API_KEY
+  twelvedata_API_KEY=YOUR_API_KEY
+  twelvedata_validate_API_KEY=YOUR_API_KEY
+  LLM_API_KEY=YOUR_API_KEY
+  FMP_API_KEY=YOUR_API_KEY
+  DB_HOST=YOUR_DB_HOST
+  DB_USER=YOUR_DB_USER
+  DB_PASSWORD=YOUR_DB_PASSWORD
+  DB_NAME=YOUR_DB_NAME
+  DB_PORT=YOUR_DB_PORT
+  ```
+  You can find the DB information in the MySQL deployment under **Variables**.
+  
+  **API Key Registration Links:**
 
    [The News API](https://www.thenewsapi.com/register)
-
+  
    [Twelve Data](https://twelvedata.com/register)
-
+  
    [Google Gemini](https://ai.google.dev/gemini-api/docs)
-
+  
    [FMP](https://site.financialmodelingprep.com/register)
-

@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <div className="flex w-full h-[59px] bg-[#181818] shadow-md items-center justify-between px-4">
       <Link href="/">
-        <div className="text-white font-normal text-lg select-none">Name</div>
+        <div className="text-white font-normal text-lg select-none">BrokeNoMo</div>
       </Link>
       
         {isLoggedIn ? (

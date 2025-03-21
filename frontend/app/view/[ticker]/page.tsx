@@ -11,6 +11,7 @@ import TopMovers from '../../components/top_movers';
 import StockNews from "../../components/news";
 import Link from 'next/link';
 import Button from '@mui/material/Button';
+import { BACKEND_URL } from '../../config';
 
 interface NewsArticle {
   headline: string;
@@ -25,11 +26,12 @@ export default function StockPage() {
   const [showChatbox, setShowChatbox] = useState(false);
   const [newsData, setNewsData] = useState<NewsArticle[]>([]);
   const [isValidTicker, setIsValidTicker] = useState<boolean | null>(null);
+  const [showApiLimitExceeded, setShowApiLimitExceeded] = useState(false);
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5003/news?keyword=${ticker}&limit=5`);
+        const response = await fetch(`${BACKEND_URL}/news/news?keyword=${ticker}&limit=5`);
         if (!response.ok) {
           throw new Error(`Error fetching news: ${response.statusText}`);
         }
@@ -49,7 +51,7 @@ export default function StockPage() {
   useEffect(() => {
     const validateTicker = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5004/validate_ticker?ticker=${ticker}`);
+        const response = await fetch(`${BACKEND_URL}/stocks/validate_ticker?ticker=${ticker}`);
         const data = await response.json();
         setIsValidTicker(response.ok && data.valid);
       } catch (error) {
@@ -60,6 +62,16 @@ export default function StockPage() {
 
     validateTicker();
   } , [ticker]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isValidTicker === null) {
+        setShowApiLimitExceeded(true);
+      }
+    }, 3000);
+  
+    return () => clearTimeout(timeout);
+  }, [isValidTicker]);
 
   const handleChatboxToggle = () => {
     setShowChatbox(!showChatbox);
@@ -72,7 +84,7 @@ export default function StockPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5001/add_watchlist", {
+      const response = await fetch(`${BACKEND_URL}/connection/add_watchlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, stock_ticker: ticker }),
@@ -88,15 +100,31 @@ export default function StockPage() {
   };
 
   if (isValidTicker === null) {
-    return <h2 className="text-white">Crunching data...</h2>;
+    return <h2 className="text-white">{showApiLimitExceeded ? "API limit exceeded. Please try again later." : "Crunching data..."}</h2>;
   }
 
-  if (!isValidTicker) {
+  if (!isValidTicker && !showApiLimitExceeded) {
     return (
       <>
         <Header />
         <div className="text-white text-center mt-10">
           <h1 className="text-2xl">No results for &#39;{ticker}&#39;</h1>
+          <Link href="/">
+            <Button variant="contained" color="primary" sx={{ marginTop: '10px' }}>
+              Return Home
+            </Button>
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+  if (showApiLimitExceeded) {
+    return (
+      <>
+        <Header />
+        <div className="text-white text-center mt-10">
+          <h1 className="text-2xl">API limit exceeded. Please try again later.</h1>
           <Link href="/">
             <Button variant="contained" color="primary" sx={{ marginTop: '10px' }}>
               Return Home
@@ -182,7 +210,7 @@ return (
       </div>
     </div>
     {/* Chatbox */}
-    {showChatbox && <Chatbox ticker={''} />}
+    {showChatbox && ticker && <Chatbox ticker={ticker} />}
   </div>
 );
 }

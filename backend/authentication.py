@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 from connection import get_db_connection
 import mysql.connector
 import bcrypt
 
-app = Flask(__name__)
+app = Blueprint('authentication', __name__)
 CORS(app)
 
 
@@ -45,4 +45,4 @@ def login():
         conn.close()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    app.run(port=5002)

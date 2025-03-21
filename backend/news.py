@@ -3,13 +3,13 @@ import json
 import http.client
 import urllib.parse
 import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from dotenv import load_dotenv
 from flask_cors import CORS
 
 load_dotenv()  
 
-app = Flask(__name__)
+app = Blueprint('news', __name__)
 CORS(app)
 
 @app.route('/news', methods=['GET'])
@@ -58,4 +58,4 @@ def get_news():
         return jsonify({'error': 'Failed to decode response', 'details': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5003)
+    app.run(port=5003)

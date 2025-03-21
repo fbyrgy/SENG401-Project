@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { BACKEND_URL } from "../config";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
 
       // Get the user ID
-      const response = await fetch("http://localhost:5001/get_user_id", {
+      const response = await fetch(`${BACKEND_URL}/connection/get_user_id`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

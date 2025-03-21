@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { BACKEND_URL } from '../config';
 
 const TIMEOUT_DELAY = 3000;
 
@@ -50,7 +51,7 @@ export default function StockChart({ ticker }: StockChartProps) {
         const endStr = endDate.toISOString().split('T')[0];
 
         const response = await fetch(
-          `http://localhost:5004/time_series?ticker=${ticker}&interval=${interval}&start_date=${startStr}&end_date=${endStr}`
+          `${BACKEND_URL}/stocks/time_series?ticker=${ticker}&interval=${interval}&start_date=${startStr}&end_date=${endStr}`
         );
         const data = await response.json();
 

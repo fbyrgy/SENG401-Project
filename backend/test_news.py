@@ -1,11 +1,14 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from news import app
+from news import app as news_blueprint
+from flask import Flask
 import json
 
 class TestNews(unittest.TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app = Flask(__name__)
+        self.app.register_blueprint(news_blueprint, url_prefix="/news")
+        self.client = self.app.test_client()
         self.app.testing = True
 
     @patch('http.client.HTTPSConnection')
@@ -29,7 +32,7 @@ class TestNews(unittest.TestCase):
 
         mock_conn.getresponse.return_value = mock_response
         
-        response = self.app.get('/news?keyword=tech&limit=1')
+        response = self.client.get('/news/news?keyword=tech&limit=1')
         
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
@@ -48,7 +51,7 @@ class TestNews(unittest.TestCase):
         mock_response.read.return_value = json.dumps({"data": []}).encode('utf-8')
         mock_conn.getresponse.return_value = mock_response
         
-        response = self.app.get('/news?keyword=unknown&limit=1')
+        response = self.client.get('/news/news?keyword=unknown&limit=1')
         
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
@@ -64,7 +67,7 @@ class TestNews(unittest.TestCase):
         mock_response.read.return_value = b'invalid json'
         mock_conn.getresponse.return_value = mock_response
         
-        response = self.app.get('/news?keyword=tech&limit=1')
+        response = self.client.get('/news/news?keyword=tech&limit=1')
         
         self.assertEqual(response.status_code, 500)
         data = json.loads(response.data)

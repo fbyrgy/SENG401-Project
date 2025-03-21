@@ -1,12 +1,12 @@
 # Using the stock gainers and losers endpoints from FMP
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Blueprint
 from flask_cors import CORS
 import requests
 import os
 
-app = Flask(__name__)
+app = Blueprint('stockmovers', __name__)
 CORS(app)   
 load_dotenv()
 API_KEY = os.getenv("FMP_API_KEY")
@@ -32,4 +32,4 @@ def get_biggest_losers():
     return jsonify(fetch_top_stocks("biggest-losers", n=3))
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5006)
+    app.run(port=5006)
