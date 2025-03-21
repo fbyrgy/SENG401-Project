@@ -7,7 +7,7 @@ import Chatbox from './chatbox';
 import StockTable from './stock_table';
 import TopMovers from './top_movers';
 import StockNews from "./news";
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface NewsArticle {
   headline: string;

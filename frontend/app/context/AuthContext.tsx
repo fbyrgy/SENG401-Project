@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { BACKEND_URL } from "../config";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface AuthContextType {
   isLoggedIn: boolean;

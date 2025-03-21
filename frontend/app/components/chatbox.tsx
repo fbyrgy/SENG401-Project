@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css'; 
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const Chatbox = ({ ticker }: { ticker: string }) => {
   const [userMessage, setUserMessage] = useState('');
