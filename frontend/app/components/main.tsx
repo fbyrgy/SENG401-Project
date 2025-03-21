@@ -8,7 +8,7 @@ import StockTable from './stock_table';
 import TopMovers from './top_movers';
 import StockNews from "./news";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-console.log("backend url: ", BACKEND_URL);
+
 interface NewsArticle {
   headline: string;
   source: string;
