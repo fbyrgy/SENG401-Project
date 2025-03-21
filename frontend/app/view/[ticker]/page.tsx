@@ -11,7 +11,7 @@ import TopMovers from '../../components/top_movers';
 import StockNews from "../../components/news";
 import Link from 'next/link';
 import Button from '@mui/material/Button';
-import { BACKEND_URL } from '../../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface NewsArticle {
   headline: string;

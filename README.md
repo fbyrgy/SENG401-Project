@@ -6,6 +6,7 @@ If you want to deploy the app yourself, first fork the repo (ensure that 'copy t
 1. Login to [Vercel](https://vercel.com)
 2. Select the correct repository from github and deploy the **frontend** directory
 3. Navigate to the settings and select the **deployment** branch
+4. Add ```NEXT_PUBLIC_BACKEND_URL={YOUR_BACKEND_URL}``` as an environment variable
 
 ## **Backend and Database Deployment**
 1. Login to [Railway](https://railway.com)

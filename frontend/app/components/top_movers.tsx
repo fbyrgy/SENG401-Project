@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface Stock {
   name: string;

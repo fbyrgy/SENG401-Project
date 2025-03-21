@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // Define the type for each symbol object returned from the API
 interface Symbol {

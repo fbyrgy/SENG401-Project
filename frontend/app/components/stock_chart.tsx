@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const TIMEOUT_DELAY = 3000;
 
